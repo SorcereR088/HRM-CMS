@@ -9,13 +9,16 @@ const Navigation: CollectionConfig = {
     read: () => true,
   },
   fields: [
+    //Logo Image
     {
       name: 'title',
-      type: 'text',
-      label: 'Site Title or Logo Text',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Logo Image',
       required: true,
     },
 
+    // Navigation Links
     {
       name: 'links',
       type: 'array',
@@ -34,10 +37,17 @@ const Navigation: CollectionConfig = {
       ],
     },
 
+    // Button
     {
       name: 'ctaLabel',
       type: 'text',
       label: 'CTA Button Text',
+      required: true,
+    },
+    {
+      name: 'ctaUrl',
+      type: 'text',
+      label: 'CTA URL',
       required: true,
     },
   ],

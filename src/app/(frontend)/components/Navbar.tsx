@@ -1,12 +1,11 @@
 'use client'
-
 type NavLink = {
   label: string
   url: string
 }
 
 type NavbarProps = {
-  title: string
+  title: { url: string } // logo image object
   links: NavLink[]
   ctaLabel: string
   ctaUrl: string
@@ -14,8 +13,11 @@ type NavbarProps = {
 
 export default function Navbar({ title, links, ctaLabel, ctaUrl }: NavbarProps) {
   return (
-    <nav className="flex justify-between items-center p-6 shadow-md bg-white">
-      <div className="font-bold text-xl">{title}</div>
+    <nav className="flex justify-between items-center px-[140px] py-5  bg-white">
+      <div className="flex items-center">
+        <img src={title.url} alt="Site Logo" className="h-10 w-auto" />
+      </div>
+
       <ul className="flex gap-6">
         {links.map((link, index) => (
           <li key={index}>
@@ -25,7 +27,8 @@ export default function Navbar({ title, links, ctaLabel, ctaUrl }: NavbarProps) 
           </li>
         ))}
       </ul>
-      <a href={ctaUrl} className="bg-green-500 px-4 py-2 rounded text-white">
+
+      <a href={ctaUrl} className="bg-Teal px-4 py-2 rounded text-white">
         {ctaLabel}
       </a>
     </nav>

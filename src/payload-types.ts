@@ -166,7 +166,7 @@ export interface Media {
  */
 export interface Navigation {
   id: number;
-  title: string;
+  title: number | Media;
   links?:
     | {
         label: string;
@@ -175,6 +175,7 @@ export interface Navigation {
       }[]
     | null;
   ctaLabel: string;
+  ctaUrl: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -309,6 +310,7 @@ export interface NavigationSelect<T extends boolean = true> {
         id?: T;
       };
   ctaLabel?: T;
+  ctaUrl?: T;
   updatedAt?: T;
   createdAt?: T;
 }
