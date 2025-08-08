@@ -1,15 +1,12 @@
-import type { CollectionConfig } from 'payload'
+import { Block } from 'payload'
 
-const Navbar: CollectionConfig = {
+const NavbarBlock: Block = {
   slug: 'navbar',
-  admin: {
-    useAsTitle: 'title',
-  },
-  access: {
-    read: () => true,
+  labels: {
+    singular: 'Navbar',
+    plural: 'Navbars',
   },
   fields: [
-    //Logo Image
     {
       name: 'title',
       type: 'upload',
@@ -17,8 +14,6 @@ const Navbar: CollectionConfig = {
       label: 'Logo Image',
       required: true,
     },
-
-    // Navigation Links
     {
       name: 'links',
       type: 'array',
@@ -36,8 +31,6 @@ const Navbar: CollectionConfig = {
         },
       ],
     },
-
-    // Button
     {
       name: 'ctaLabel',
       type: 'text',
@@ -53,4 +46,4 @@ const Navbar: CollectionConfig = {
   ],
 }
 
-export default Navbar
+export default NavbarBlock

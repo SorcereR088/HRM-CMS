@@ -1,12 +1,10 @@
-import type { CollectionConfig } from 'payload'
+import { Block } from 'payload'
 
-const TrustedBy: CollectionConfig = {
+const TrustedBy: Block = {
   slug: 'trusted-by',
-  admin: {
-    useAsTitle: 'highlightText', // Use the highlighted part as the display title
-  },
-  access: {
-    read: () => true, // Public read access
+  labels: {
+    singular: 'Trusted By Section',
+    plural: 'Trusted By Sections',
   },
   fields: [
     {
