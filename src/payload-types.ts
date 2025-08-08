@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     navigation: Navigation;
     hero: Hero;
+    'trusted-by': TrustedBy;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -81,6 +82,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     hero: HeroSelect<false> | HeroSelect<true>;
+    'trusted-by': TrustedBySelect<false> | TrustedBySelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -186,8 +188,24 @@ export interface Navigation {
 export interface Hero {
   id: number;
   heading: string;
-  subheading: string;
   image?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trusted-by".
+ */
+export interface TrustedBy {
+  id: number;
+  preText: string;
+  highlightText: string;
+  postText: string;
+  subtitle?: string | null;
+  logos: {
+    logo: number | Media;
+    id?: string | null;
+  }[];
   updatedAt: string;
   createdAt: string;
 }
@@ -213,6 +231,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'hero';
         value: number | Hero;
+      } | null)
+    | ({
+        relationTo: 'trusted-by';
+        value: number | TrustedBy;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -320,8 +342,25 @@ export interface NavigationSelect<T extends boolean = true> {
  */
 export interface HeroSelect<T extends boolean = true> {
   heading?: T;
-  subheading?: T;
   image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trusted-by_select".
+ */
+export interface TrustedBySelect<T extends boolean = true> {
+  preText?: T;
+  highlightText?: T;
+  postText?: T;
+  subtitle?: T;
+  logos?:
+    | T
+    | {
+        logo?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

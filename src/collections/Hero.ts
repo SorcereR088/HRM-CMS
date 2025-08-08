@@ -15,12 +15,12 @@ const Hero: CollectionConfig = {
       label: 'Main Heading',
       required: true,
     },
-    {
-      name: 'subheading',
-      type: 'textarea',
-      label: 'Subheading / Description',
-      required: true,
-    },
+    // {
+    //   name: 'subheading',
+    //   type: 'textarea',
+    //   label: 'Subheading / Description',
+    //   required: true,
+    // },
     {
       name: 'image',
       type: 'upload',
