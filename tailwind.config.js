@@ -13,6 +13,7 @@ module.exports = {
         primary: '#EFFFFA',
         secondary: '#F5F7F7',
         Teal: '#00AA77',
+        DarkTeal: '#009b6c',
         secondaryText: '#484848',
         Gray: '#C2C2C2',
       },
