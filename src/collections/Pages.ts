@@ -9,26 +9,21 @@ const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     preview: (doc) => {
-      if (process.env.PAYLOAD_PUBLIC_SERVER_URL) {
-        return `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/preview?slug=${doc.slug}&collection=pages`
-      }
-      return `http://localhost:3000/preview?slug=${doc.slug}&collection=pages`
+      const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
+      return `${baseUrl}/api/preview?slug=${doc.slug}&collection=pages`
     },
     livePreview: {
-      url: ({ data, collectionConfig, payload }) => {
+      url: ({ data }) => {
         const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
-
-        // For home page, use root path
-        if (data.slug === 'home') {
-          return `${baseUrl}/api/preview?slug=home&collection=pages`
-        }
-
-        return `${baseUrl}/api/preview?slug=${data.slug}&collection=pages`
+        return `${baseUrl}/preview/${data.slug}?id=${data.id}`
       },
     },
   },
   access: {
     read: () => true,
+  },
+  versions: {
+    drafts: true, // IMPORTANT: Enable drafts for live preview
   },
   fields: [
     {

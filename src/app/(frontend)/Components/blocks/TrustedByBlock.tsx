@@ -62,7 +62,7 @@ const TrustedByBlock: React.FC<TrustedByBlockProps> = ({
                     ? logo.alt
                     : `Logo ${index + 1}`
                 }
-                width={150}
+                width={200}
                 height={80}
                 className="h-14 sm:h-16 md:h-20 object-contain"
               />

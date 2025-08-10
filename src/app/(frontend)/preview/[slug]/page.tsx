@@ -1,41 +1,52 @@
-import { draftMode } from 'next/headers'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useLivePreview } from '@payloadcms/live-preview-react'
 import PageRender from '../../Components/PageRender'
 
 interface Props {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function PreviewPage({ params }: Props) {
-  const { isEnabled } = await draftMode()
+export default function PreviewPage({ params, searchParams }: Props) {
+  const [resolvedParams, setResolvedParams] = useState<{ slug: string } | null>(null)
+  const [resolvedSearchParams, setResolvedSearchParams] = useState<any>(null)
+  const [initialData, setInitialData] = useState<any>(null)
 
-  if (!isEnabled) {
-    return <div>Preview mode not enabled</div>
-  }
+  useEffect(() => {
+    const resolveParams = async () => {
+      const p = await params
+      const sp = await searchParams
+      setResolvedParams(p)
+      setResolvedSearchParams(sp)
 
-  try {
-    const resolvedParams = await params
-    const payload = await getPayload({ config })
-
-    const page = await payload.find({
-      collection: 'pages',
-      where: {
-        slug: {
-          equals: resolvedParams.slug,
-        },
-      },
-      limit: 1,
-      draft: true,
-    })
-
-    if (!page.docs.length) {
-      return <div>Page not found</div>
+      // Fetch initial data
+      const docId = sp.id as string
+      if (docId) {
+        try {
+          const response = await fetch(`/api/preview-data?id=${docId}&collection=pages`)
+          const data = await response.json()
+          setInitialData(data)
+        } catch (error) {
+          console.error('Error fetching initial data:', error)
+        }
+      }
     }
 
-    return <PageRender page={page.docs[0]} />
-  } catch (error) {
-    console.error('Preview page error:', error)
-    return <div>Error loading preview</div>
+    resolveParams()
+  }, [params, searchParams])
+
+  // Use live preview hook
+  const { data } = useLivePreview({
+    initialData,
+    serverURL: process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000',
+    depth: 2,
+  })
+
+  if (!resolvedParams || !data) {
+    return <div>Loading preview...</div>
   }
+
+  return <PageRender page={data} />
 }

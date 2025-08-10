@@ -23,8 +23,7 @@ export default buildConfig({
     livePreview: {
       url: ({ data, locale }) => {
         const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
-        const slug = data.slug || 'home'
-        return `${baseUrl}/api/preview?slug=${slug}&collection=pages`
+        return `${baseUrl}/preview/${data.slug}?id=${data.id}`
       },
       collections: ['pages'],
       breakpoints: [

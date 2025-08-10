@@ -8,8 +8,6 @@ export async function GET(request: NextRequest): Promise<Response> {
   const slug = searchParams.get('slug')
   const collection = searchParams.get('collection')
 
-  console.log('🔍 Preview API called:', { slug, collection, url: request.url })
-
   if (!slug || !collection) {
     return new Response('Missing slug or collection parameter', { status: 400 })
   }
@@ -18,7 +16,6 @@ export async function GET(request: NextRequest): Promise<Response> {
     const payload = await getPayload({ config })
 
     if (collection === 'pages') {
-      // Fetch the page to verify it exists
       const page = await payload.find({
         collection: 'pages',
         where: {
@@ -30,26 +27,22 @@ export async function GET(request: NextRequest): Promise<Response> {
         depth: 2,
       })
 
-      console.log('📄 Page found:', page.docs.length > 0)
-
       if (page.docs.length === 0) {
         return new Response('Page not found', { status: 404 })
       }
+
+      // Enable draft mode
+      const draft = await draftMode()
+      draft.enable()
+
+      // Redirect with document ID for live preview
+      const redirectPath = `/preview/${slug}?id=${page.docs[0].id}`
+      return Response.redirect(new URL(redirectPath, request.url), 307)
     }
 
-    // Enable draft mode
-    const draft = await draftMode()
-    draft.enable()
-    console.log('✅ Draft mode enabled')
-
-    // FIXED: Always redirect to /preview/{slug} format
-    const redirectPath = `/preview/${slug}`
-    console.log('🔀 Redirecting to:', redirectPath)
-
-    // Redirect to the preview page
-    return Response.redirect(new URL(redirectPath, request.url), 307)
+    return new Response('Collection not supported', { status: 400 })
   } catch (error) {
-    console.error('❌ Preview error:', error)
+    console.error('Preview error:', error)
     return new Response('Internal Server Error', { status: 500 })
   }
 }

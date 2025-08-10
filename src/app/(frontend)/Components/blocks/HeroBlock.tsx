@@ -31,7 +31,7 @@ const HeroBlock: React.FC<HeroBlockProps> = ({ title, subtitle, backgroundImage 
             src={bgImage.url}
             alt={bgImage.alt || 'Dashboard Preview'}
             fill
-            className="w-full max-w-6xl mx-auto h-full object-cover object-top px-6 sm:px-12 md:px-20 lg:px-0"
+            className="w-full max-w-7xl mx-auto h-full object-cover object-top px-6 sm:px-12 md:px-20 lg:px-0"
             priority
           />
         </div>

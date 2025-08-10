@@ -69,7 +69,7 @@ const NavbarBlock: React.FC<NavbarBlockProps> = ({ logo, links, ctaLabel, ctaUrl
         <div className="hidden md:block">
           <Link
             href={ctaUrl}
-            className="bg-Teal text-white px-5 py-2 rounded-md font-semibold shadow-md hover:bg-teal-700 transition-colors duration-150"
+            className="bg-Teal text-white px-5 py-2 rounded-sm font-medium shadow-md hover:bg-green-600 transition-colors duration-150"
           >
             {ctaLabel}
           </Link>
@@ -78,7 +78,7 @@ const NavbarBlock: React.FC<NavbarBlockProps> = ({ logo, links, ctaLabel, ctaUrl
         {/* Hamburger (mobile only) */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-Teal"
+          className="md:hidden p-2 rounded-sm focus:outline-none focus:ring-2 focus:ring-Teal"
           aria-label={isOpen ? 'Close Menu' : 'Open Menu'}
         >
           {isOpen ? (

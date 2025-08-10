@@ -8,7 +8,7 @@ const NavbarBlock: Block = {
   },
   fields: [
     {
-      name: 'logo', // Changed from 'title' to 'logo' for clarity
+      name: 'logo',
       type: 'upload',
       relationTo: 'media',
       label: 'Logo Image',
