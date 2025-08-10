@@ -69,9 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
-    navigation: Navigation;
-    hero: Hero;
-    'trusted-by': TrustedBy;
+    pages: Page;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -80,9 +78,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    navigation: NavigationSelect<false> | NavigationSelect<true>;
-    hero: HeroSelect<false> | HeroSelect<true>;
-    'trusted-by': TrustedBySelect<false> | TrustedBySelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -149,7 +145,7 @@ export interface User {
  */
 export interface Media {
   id: number;
-  alt: string;
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -161,51 +157,86 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation".
+ * via the `definition` "pages".
  */
-export interface Navigation {
+export interface Page {
   id: number;
-  title: number | Media;
-  links?:
+  title: string;
+  /**
+   * This will be the URL path for this page (e.g., "home", "contact-us", "book-a-demo")
+   */
+  slug: string;
+  /**
+   * SEO title for this page
+   */
+  metaTitle?: string | null;
+  /**
+   * SEO description for this page
+   */
+  metaDescription?: string | null;
+  /**
+   * Drag and drop to reorder sections
+   */
+  content: (
     | {
-        label: string;
-        url: string;
+        logo: number | Media;
+        links?:
+          | {
+              label: string;
+              url: string;
+              id?: string | null;
+            }[]
+          | null;
+        ctaLabel: string;
+        ctaUrl: string;
         id?: string | null;
-      }[]
-    | null;
-  ctaLabel: string;
-  ctaUrl: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "hero".
- */
-export interface Hero {
-  id: number;
-  heading: string;
-  image?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "trusted-by".
- */
-export interface TrustedBy {
-  id: number;
-  preText: string;
-  highlightText: string;
-  postText: string;
-  subtitle?: string | null;
-  logos: {
-    logo: number | Media;
-    id?: string | null;
-  }[];
+        blockName?: string | null;
+        blockType: 'navbar';
+      }
+    | {
+        title: string;
+        subtitle?: string | null;
+        backgroundImage?: (number | null) | Media;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'hero';
+      }
+    | {
+        preText: string;
+        highlightText: string;
+        postText: string;
+        subtitle?: string | null;
+        logos: {
+          logo: number | Media;
+          id?: string | null;
+        }[];
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'trusted-by';
+      }
+  )[];
+  status?: ('draft' | 'published') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -225,16 +256,8 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'navigation';
-        value: number | Navigation;
-      } | null)
-    | ({
-        relationTo: 'hero';
-        value: number | Hero;
-      } | null)
-    | ({
-        relationTo: 'trusted-by';
-        value: number | TrustedBy;
+        relationTo: 'pages';
+        value: number | Page;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -317,50 +340,86 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation_select".
+ * via the `definition` "pages_select".
  */
-export interface NavigationSelect<T extends boolean = true> {
+export interface PagesSelect<T extends boolean = true> {
   title?: T;
-  links?:
+  slug?: T;
+  metaTitle?: T;
+  metaDescription?: T;
+  content?:
     | T
     | {
-        label?: T;
-        url?: T;
-        id?: T;
+        navbar?:
+          | T
+          | {
+              logo?: T;
+              links?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    id?: T;
+                  };
+              ctaLabel?: T;
+              ctaUrl?: T;
+              id?: T;
+              blockName?: T;
+            };
+        hero?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              backgroundImage?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'trusted-by'?:
+          | T
+          | {
+              preText?: T;
+              highlightText?: T;
+              postText?: T;
+              subtitle?: T;
+              logos?:
+                | T
+                | {
+                    logo?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
       };
-  ctaLabel?: T;
-  ctaUrl?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "hero_select".
- */
-export interface HeroSelect<T extends boolean = true> {
-  heading?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "trusted-by_select".
- */
-export interface TrustedBySelect<T extends boolean = true> {
-  preText?: T;
-  highlightText?: T;
-  postText?: T;
-  subtitle?: T;
-  logos?:
-    | T
-    | {
-        logo?: T;
-        id?: T;
-      };
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

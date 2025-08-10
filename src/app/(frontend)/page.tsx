@@ -1,31 +1,68 @@
-import Hero from './MyPages/Hero'
-import TrustedBy from './Components/TrustedBy'
+import { draftMode } from 'next/headers'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import PageRenderer from '@/app/(frontend)/Components/PageRender'
+import { Page } from '@/payload-types'
+import { Metadata } from 'next'
 
-async function getHero() {
-  const res = await fetch('http://localhost:3000/api/hero', {
-    next: { revalidate: 60 },
-  })
-  const data = await res.json()
-  return data.docs[0]
+async function getHomePage(isDraft: boolean): Promise<Page | null> {
+  const payload = await getPayload({ config })
+
+  try {
+    const result = await payload.find({
+      collection: 'pages',
+      where: {
+        slug: {
+          equals: 'home',
+        },
+        ...(isDraft ? {} : { status: { equals: 'published' } }),
+      },
+      limit: 1,
+      draft: isDraft,
+      depth: 2, // This populates relationships like media uploads
+    })
+
+    return result.docs[0] || null
+  } catch (error) {
+    console.error('Error fetching home page:', error)
+    return null
+  }
 }
 
-async function getTrustedBy() {
-  const res = await fetch('http://localhost:3000/api/trusted-by', {
-    next: { revalidate: 60 },
-  })
-  const data = await res.json()
-  return data.docs[0] // or return all if you want a list
+// Generate metadata for home page
+export async function generateMetadata(): Promise<Metadata> {
+  const { isEnabled: isDraft } = await draftMode()
+  const page = await getHomePage(isDraft)
+
+  if (!page) {
+    return {
+      title: 'Home',
+      description: 'Welcome to our website',
+    }
+  }
+
+  return {
+    title: page.metaTitle || page.title,
+    description: page.metaDescription || undefined,
+  }
 }
 
-export default async function Page() {
-  const hero = await getHero()
-  const trustedBy = await getTrustedBy()
+export default async function HomePage() {
+  const { isEnabled: isDraft } = await draftMode()
+  const page = await getHomePage(isDraft)
 
-  return (
-    <>
-      <Hero heading={hero.heading} subheading={hero.subheading} image={hero.image} />
+  if (!page) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Home page not found</h1>
+          <p className="text-gray-600">Please create a page with slug "home" in your CMS.</p>
+        </div>
+      </div>
+    )
+  }
 
-      <TrustedBy data={trustedBy} />
-    </>
-  )
+  return <PageRenderer page={page} />
 }
+
+export const revalidate = 0 // Always revalidate for draft mode

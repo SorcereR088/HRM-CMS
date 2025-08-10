@@ -1,4 +1,3 @@
-// src/payload/blocks/Hero.ts
 import { Block } from 'payload'
 
 const Hero: Block = {
