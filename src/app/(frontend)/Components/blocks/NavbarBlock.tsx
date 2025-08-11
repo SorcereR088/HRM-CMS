@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
@@ -23,9 +23,42 @@ interface NavbarBlockProps {
 
 const NavbarBlock: React.FC<NavbarBlockProps> = ({ logo, links, ctaLabel, ctaUrl }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   // Check if logo is a populated Media object
   const isLogoPopulated = typeof logo === 'object' && logo !== null && 'url' in logo
+
+  // Handle scroll effect for navbar background
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      setIsScrolled(scrollTop > 10)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close mobile menu when clicking outside or on escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
   if (!isLogoPopulated) {
     console.warn('NavbarBlock: Logo media not populated.')
@@ -34,18 +67,31 @@ const NavbarBlock: React.FC<NavbarBlockProps> = ({ logo, links, ctaLabel, ctaUrl
 
   return (
     <>
-      <nav className="w-full bg-white px-6 md:px-[140px] py-4">
+      {/* Sticky Navbar */}
+      <nav
+        className={`
+          fixed top-0 left-0 right-0 w-full z-50 
+          px-6 md:px-[140px] py-4 
+          transition-all duration-300 ease-in-out
+          ${
+            isScrolled
+              ? 'bg-white/90 backdrop-blur-md border-b border-gray-100'
+              : 'bg-white/90 backdrop-blur-md'
+          }
+        `}
+      >
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
             {logo.url && (
-              <Link href="/">
+              <Link href="/" className="block">
                 <Image
                   src={logo.url}
                   alt={logo.alt || 'Logo'}
                   width={120}
                   height={40}
-                  className="h-10 w-auto"
+                  className="h-10 w-auto transition-transform duration-200 hover:scale-105"
+                  priority
                 />
               </Link>
             )}
@@ -53,12 +99,12 @@ const NavbarBlock: React.FC<NavbarBlockProps> = ({ logo, links, ctaLabel, ctaUrl
 
           {/* Desktop Nav Links (Center) */}
           <div className="hidden md:flex flex-1 justify-center">
-            <ul className="flex gap-6 items-center">
+            <ul className="flex gap-8 items-center">
               {links?.map((link, index) => (
                 <li key={link.id || index}>
                   <Link
                     href={link.url}
-                    className="relative text-gray-700 font-medium px-1 py-2 transition-colors duration-300 hover:text-Teal group"
+                    className="relative text-gray-700 font-medium px-2 py-2 transition-colors duration-300 hover:text-Teal group"
                   >
                     {link.label}
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-Teal transition-all duration-300 ease-out group-hover:w-full"></span>
@@ -78,64 +124,82 @@ const NavbarBlock: React.FC<NavbarBlockProps> = ({ logo, links, ctaLabel, ctaUrl
           {/* Hamburger (mobile only) */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 relative z-50 focus:outline-none"
+            className="md:hidden p-2 relative z-[60] focus:outline-none transition-colors duration-200 hover:bg-gray-100 rounded-lg"
             aria-label={isOpen ? 'Close Menu' : 'Open Menu'}
           >
             {isOpen ? (
-              <X className="w-7 h-7 text-gray-900" />
+              <X className="w-6 h-6 text-gray-900" />
             ) : (
-              <Menu className="w-7 h-7 text-gray-700" />
+              <Menu className="w-6 h-6 text-gray-700" />
             )}
           </button>
         </div>
       </nav>
 
-      {/* Backdrop Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-all duration-300 ease-in-out"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {/* Spacer to prevent content from hiding behind fixed navbar */}
+      <div className="h-[72px]" />
 
-      {/* Modern Mobile Sidebar */}
+      {/* Full Screen Mobile Menu Overlay with Animation */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-white/95 backdrop-blur-lg shadow-2xl z-40 transform transition-all duration-500 ease-in-out md:hidden overflow-hidden ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`
+          fixed inset-0 bg-white z-[55] md:hidden
+          transform transition-all duration-500 ease-in-out
+          ${
+            isOpen
+              ? 'translate-y-0 opacity-100 pointer-events-auto'
+              : '-translate-y-full opacity-0 pointer-events-none'
+          }
+        `}
+        style={{ top: '72px' }}
       >
-        {/* Modern Sidebar Header */}
-        <div className="relative p-8 bg-gradient-to-br from-Teal/5 to-blue-50 border-b border-gray-100">
-          {/* Decorative elements */}
-          <div className="absolute top-4 right-4 w-16 h-16 bg-Teal/10 rounded-full blur-xl"></div>
-          <div className="absolute bottom-4 left-4 w-12 h-12 bg-blue-200/30 rounded-full blur-lg"></div>
-        </div>
-
-        {/* Sidebar Content */}
-        <div className="flex flex-col h-[90vh] pb-4">
+        {/* Mobile Menu Content */}
+        <div className="flex flex-col h-full">
           {/* Navigation Links */}
-          <nav className="flex-1 px-6 py-2 space-y-1 overflow-y-auto">
-            {links?.map((link, index) => (
-              <Link
-                key={link.id || index}
-                href={link.url}
-                onClick={() => setIsOpen(false)}
-                className="group relative block p-4 rounded-xl font-medium text-gray-700 transition-all duration-300 hover:bg-gradient-to-r hover:from-Teal/10 hover:to-blue-50 hover:text-Teal transform hover:scale-[1.02] hover:shadow-sm"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base">{link.label}</span>
-                  <div className="w-2 h-2 bg-Teal rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
+          <div className="flex-1 px-6 py-8">
+            <nav className="space-y-1">
+              {links && links.length > 0 ? (
+                links.map((link, index) => (
+                  <Link
+                    key={link.id || index}
+                    href={link.url}
+                    onClick={() => setIsOpen(false)}
+                    className={`
+                      group block py-4 px-4 -mx-4 rounded-xl
+                      text-xl font-medium text-gray-900
+                      transition-all duration-300 ease-in-out
+                      hover:bg-gray-50 hover:text-Teal
+                      border-b border-gray-100 last:border-b-0
+                      transform
+                      ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+                    `}
+                    style={{
+                      transitionDelay: isOpen ? `${index * 100}ms` : '0ms',
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{link.label}</span>
+                      <div className="w-2 h-2 bg-Teal rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="text-gray-500 text-center py-8">No navigation links available</div>
+              )}
+            </nav>
+          </div>
 
-                {/* Modern hover line */}
-                <div className="h-0.5 bg-gradient-to-r from-Teal to-blue-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left mt-2"></div>
-              </Link>
-            ))}
-          </nav>
-
-          {/* Modern CTA Section - Moved up */}
-          <div className="px-6 py-4 bg-gradient-to-t from-gray-50 to-transparent">
-            <div className="space-y-3">
+          {/* CTA Section at Bottom */}
+          <div
+            className={`
+            px-6 py-8 bg-gray-50 border-t border-gray-100
+            transform transition-all duration-500 ease-in-out
+            ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
+          `}
+            style={{
+              transitionDelay: isOpen ? '300ms' : '0ms',
+            }}
+          >
+            <div className="space-y-4">
               <p className="text-sm text-gray-600 text-center">Ready to get started?</p>
               <Button
                 href={ctaUrl}

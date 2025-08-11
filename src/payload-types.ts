@@ -265,6 +265,29 @@ export interface Page {
         blockName?: string | null;
         blockType: 'features';
       }
+    | {
+        /**
+         * Optional heading for the highlights section
+         */
+        heading?: string | null;
+        /**
+         * Optional subheading or description for the highlights section
+         */
+        subheading?: string | null;
+        /**
+         * Enter an Iconify icon name that will be used for all highlight items (e.g., "mdi:check-circle", "heroicons:check-circle")
+         */
+        globalIcon: string;
+        highlights: {
+          title: string;
+          description: string;
+          id?: string | null;
+        }[];
+        backgroundColor?: ('white' | 'gray-50' | 'teal-50') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'highlights';
+      }
   )[];
   status?: ('draft' | 'published') | null;
   updatedAt: string;
@@ -463,6 +486,23 @@ export interface PagesSelect<T extends boolean = true> {
                     iconUrl?: T;
                     lucideIcon?: T;
                     iconifyIcon?: T;
+                    id?: T;
+                  };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        highlights?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              globalIcon?: T;
+              highlights?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
                     id?: T;
                   };
               backgroundColor?: T;
