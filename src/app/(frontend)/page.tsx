@@ -4,6 +4,7 @@ import config from '@payload-config'
 import PageRenderer from '@/app/(frontend)/Components/PageRender'
 import { Page } from '@/payload-types'
 import { Metadata } from 'next'
+import LenisProvider from './Providers/LenisProvider'
 
 async function getHomePage(isDraft: boolean): Promise<Page | null> {
   const payload = await getPayload({ config })
@@ -19,7 +20,7 @@ async function getHomePage(isDraft: boolean): Promise<Page | null> {
       },
       limit: 1,
       draft: isDraft,
-      depth: 2, // This populates relationships like media uploads
+      depth: 2,
     })
 
     return result.docs[0] || null
@@ -29,7 +30,6 @@ async function getHomePage(isDraft: boolean): Promise<Page | null> {
   }
 }
 
-// Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {
   const { isEnabled: isDraft } = await draftMode()
   const page = await getHomePage(isDraft)
@@ -62,7 +62,11 @@ export default async function HomePage() {
     )
   }
 
-  return <PageRenderer page={page} />
+  return (
+    <LenisProvider>
+      <PageRenderer page={page} />
+    </LenisProvider>
+  )
 }
 
-export const revalidate = 0 // Always revalidate for draft mode
+export const revalidate = 0
