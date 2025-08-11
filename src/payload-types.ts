@@ -235,11 +235,40 @@ export interface Page {
         blockName?: string | null;
         blockType: 'trusted-by';
       }
+    | {
+        heading: string;
+        subheading?: string | null;
+        features: {
+          title: string;
+          description: string;
+          iconType: 'upload' | 'url' | 'lucide' | 'iconify';
+          /**
+           * Upload an image or SVG file for the icon
+           */
+          iconUpload?: (number | null) | Media;
+          /**
+           * Enter a URL to an icon/image
+           */
+          iconUrl?: string | null;
+          /**
+           * Enter a Lucide icon name (e.g., "User", "Search", "Settings")
+           */
+          lucideIcon?: string | null;
+          /**
+           * Enter an Iconify icon name (e.g., "mdi:account", "heroicons:search", "ph:gear")
+           */
+          iconifyIcon?: string | null;
+          id?: string | null;
+        }[];
+        backgroundColor?: ('white' | 'gray-50' | 'teal-50') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'features';
+      }
   )[];
   status?: ('draft' | 'published') | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -419,11 +448,31 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        features?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              features?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    iconType?: T;
+                    iconUpload?: T;
+                    iconUrl?: T;
+                    lucideIcon?: T;
+                    iconifyIcon?: T;
+                    id?: T;
+                  };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   status?: T;
   updatedAt?: T;
   createdAt?: T;
-  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -24,10 +24,10 @@ const TrustedByBlock: React.FC<TrustedByBlockProps> = ({
   logos,
 }) => {
   return (
-    <section className="w-full px-4 py-16 text-center bg-white">
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold">
+    <section className="w-full px-4 py-24 text-center bg-white">
+      <h2 className="text-2xl sm:text-3xl md:text-[40px] font-semibold">
         {preText}{' '}
-        <span className="text-Teal text-2xl sm:text-3xl md:text-4xl font-bold">
+        <span className="text-Teal text-2xl sm:text-3xl md:text-[40px] font-bold">
           {highlightText}
         </span>{' '}
         {postText}

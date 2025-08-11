@@ -5,6 +5,7 @@ import { Page } from '@/payload-types'
 import NavbarBlock from '../Components/blocks/NavbarBlock'
 import HeroBlock from '../Components/blocks/HeroBlock'
 import TrustedByBlock from '../Components/blocks/TrustedByBlock'
+import FeaturesBlock from '../Components/blocks/FeaturesBlock'
 
 interface PageRendererProps {
   page: Page
@@ -24,6 +25,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
               return <HeroBlock key={`${block.blockType}-${index}`} {...block} />
             case 'trusted-by':
               return <TrustedByBlock key={`${block.blockType}-${index}`} {...block} />
+            case 'features':
+              return <FeaturesBlock key={`${block.blockType}-${index}`} {...block} />
             default:
               console.warn(`Unknown block type: ${(block as any).blockType}`)
               return null

@@ -3,27 +3,33 @@ import { CollectionConfig } from 'payload'
 import Navbar from '../blocks/Navbar'
 import Hero from '../blocks/Hero'
 import TrustedBy from '../blocks/TrustedBy'
+import FeaturesBlock from '../blocks/Features'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
     preview: (doc) => {
-      const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
-      return `${baseUrl}/api/preview?slug=${doc.slug}&collection=pages`
+      if (process.env.PAYLOAD_PUBLIC_SERVER_URL) {
+        return `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/preview?slug=${doc.slug}&collection=pages`
+      }
+      return `http://localhost:3000/preview?slug=${doc.slug}&collection=pages`
     },
     livePreview: {
-      url: ({ data }) => {
+      url: ({ data, collectionConfig, payload }) => {
         const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
-        return `${baseUrl}/preview/${data.slug}?id=${data.id}`
+
+        // For home page, use root path
+        if (data.slug === 'home') {
+          return `${baseUrl}/api/preview?slug=home&collection=pages`
+        }
+
+        return `${baseUrl}/api/preview?slug=${data.slug}&collection=pages`
       },
     },
   },
   access: {
     read: () => true,
-  },
-  versions: {
-    drafts: true, // IMPORTANT: Enable drafts for live preview
   },
   fields: [
     {
@@ -78,7 +84,7 @@ const Pages: CollectionConfig = {
         initCollapsed: false,
         description: 'Drag and drop to reorder sections',
       },
-      blocks: [Navbar, Hero, TrustedBy],
+      blocks: [Navbar, Hero, TrustedBy, FeaturesBlock], // Added FeaturesBlock here
     },
     {
       name: 'status',
