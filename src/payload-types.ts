@@ -288,6 +288,34 @@ export interface Page {
         blockName?: string | null;
         blockType: 'highlights';
       }
+    | {
+        /**
+         * Main heading for the testimonials section
+         */
+        heading?: string | null;
+        /**
+         * Optional subheading or description
+         */
+        subheading?: string | null;
+        testimonials: {
+          /**
+           * The testimonial text from the customer (max 150 characters)
+           */
+          quote: string;
+          /**
+           * Rating out of 5 stars
+           */
+          rating: number;
+          authorName: string;
+          authorTitle?: string | null;
+          company?: string | null;
+          id?: string | null;
+        }[];
+        backgroundColor?: ('white' | 'gray-50' | 'teal-50') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'testimonials';
+      }
   )[];
   status?: ('draft' | 'published') | null;
   updatedAt: string;
@@ -503,6 +531,25 @@ export interface PagesSelect<T extends boolean = true> {
                 | {
                     title?: T;
                     description?: T;
+                    id?: T;
+                  };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        testimonials?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              testimonials?:
+                | T
+                | {
+                    quote?: T;
+                    rating?: T;
+                    authorName?: T;
+                    authorTitle?: T;
+                    company?: T;
                     id?: T;
                   };
               backgroundColor?: T;

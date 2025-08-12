@@ -7,6 +7,7 @@ import HeroBlock from '../Components/blocks/HeroBlock'
 import TrustedByBlock from '../Components/blocks/TrustedByBlock'
 import FeaturesBlock from '../Components/blocks/FeaturesBlock'
 import HighlightBlock from '../Components/blocks/HighlightBlock'
+import TestimonialsBlock from '../Components/blocks/TestimonialsBlock'
 
 interface PageRendererProps {
   page: Page
@@ -30,6 +31,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
               return <FeaturesBlock key={`${block.blockType}-${index}`} {...block} />
             case 'highlights':
               return <HighlightBlock key={`${block.blockType}-${index}`} {...block} />
+            case 'testimonials':
+              return <TestimonialsBlock key={`${block.blockType}-${index}`} {...block} />
             default:
               console.warn(`Unknown block type: ${(block as any).blockType}`)
               return null

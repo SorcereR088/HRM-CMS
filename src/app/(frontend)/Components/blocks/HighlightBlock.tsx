@@ -48,26 +48,26 @@ const HighlightsBlock: React.FC<HighlightsBlockProps> = ({
           </div>
         )}
 
-        {/* Highlights Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Highlights Grid - White Cards with Padding */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8">
           {highlights.map((highlight, index) => (
             <div
               key={highlight.id || index}
-              className="group p-6 bg-white rounded-lg hover:shadow-lg transition-all duration-300 ease-in-out"
+              className="group bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
             >
-              {/* Icon */}
-              <div className="mb-4">
-                <div className="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Icon icon={globalIcon} className="w-6 h-6 text-white" />
+              {/* Icon - Clean Green Circle */}
+              <div className="mb-10">
+                <div className="w-8 h-8 bg-Teal rounded-full flex items-center justify-center">
+                  <Icon icon={globalIcon} className="w-5 h-5 text-white" />
                 </div>
               </div>
 
-              {/* Content */}
+              {/* Content - Clean Typography */}
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-teal-600 transition-colors duration-300">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 leading-tight">
                   {highlight.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">{highlight.description}</p>
+                <p className="text-gray-600 text-md leading-tight">{highlight.description}</p>
               </div>
             </div>
           ))}

@@ -142,7 +142,7 @@ const Features: React.FC<FeaturesProps> = ({
   const renderFeature = (feature: FeatureItem, index: number) => {
     const baseClasses =
       layout === 'vertical'
-        ? 'flex items-start space-x-4'
+        ? 'flex items-center space-x-8 '
         : 'flex flex-col items-center text-center space-y-3'
 
     return (
