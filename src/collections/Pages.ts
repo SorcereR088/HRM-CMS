@@ -6,6 +6,7 @@ import TrustedBy from '../blocks/TrustedBy'
 import FeaturesBlock from '../blocks/Features'
 import Highlight from '../blocks/Highlight'
 import Testimonial from '../blocks/Testimonials'
+import Footer from '../blocks/Footer'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -86,7 +87,7 @@ const Pages: CollectionConfig = {
         initCollapsed: false,
         description: 'Drag and drop to reorder sections',
       },
-      blocks: [Navbar, Hero, TrustedBy, FeaturesBlock, Highlight, Testimonial],
+      blocks: [Navbar, Hero, TrustedBy, FeaturesBlock, Highlight, Testimonial, Footer],
     },
     {
       name: 'status',

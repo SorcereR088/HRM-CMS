@@ -316,6 +316,46 @@ export interface Page {
         blockName?: string | null;
         blockType: 'testimonials';
       }
+    | {
+        /**
+         * Main call-to-action heading
+         */
+        mainHeading: string;
+        ctaButton: {
+          text: string;
+          /**
+           * Link destination for the button
+           */
+          url?: string | null;
+        };
+        socialLinks?: {
+          heading?: string | null;
+          links?:
+            | {
+                /**
+                 * e.g., LinkedIn, Instagram, Facebook
+                 */
+                platform: string;
+                url: string;
+                id?: string | null;
+              }[]
+            | null;
+        };
+        contactInfo?: {
+          heading?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          address?: string | null;
+        };
+        footerBottom?: {
+          copyrightText?: string | null;
+          designCredit?: string | null;
+        };
+        backgroundColor?: ('teal-gradient' | 'dark-green' | 'custom-teal') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'footer';
+      }
   )[];
   status?: ('draft' | 'published') | null;
   updatedAt: string;
@@ -551,6 +591,46 @@ export interface PagesSelect<T extends boolean = true> {
                     authorTitle?: T;
                     company?: T;
                     id?: T;
+                  };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        footer?:
+          | T
+          | {
+              mainHeading?: T;
+              ctaButton?:
+                | T
+                | {
+                    text?: T;
+                    url?: T;
+                  };
+              socialLinks?:
+                | T
+                | {
+                    heading?: T;
+                    links?:
+                      | T
+                      | {
+                          platform?: T;
+                          url?: T;
+                          id?: T;
+                        };
+                  };
+              contactInfo?:
+                | T
+                | {
+                    heading?: T;
+                    email?: T;
+                    phone?: T;
+                    address?: T;
+                  };
+              footerBottom?:
+                | T
+                | {
+                    copyrightText?: T;
+                    designCredit?: T;
                   };
               backgroundColor?: T;
               id?: T;
