@@ -267,6 +267,49 @@ export interface Page {
       }
     | {
         /**
+         * First part of the heading (before animated text)
+         */
+        heading: string;
+        /**
+         * Text that appears after the animated platform names
+         */
+        subheading: string;
+        animatedPlatforms: {
+          /**
+           * Platform name that will appear in animation (e.g., Web, Android, iOS)
+           */
+          platform: string;
+          id?: string | null;
+        }[];
+        /**
+         * Description text below the heading
+         */
+        description?: string | null;
+        platformIcons?:
+          | {
+              platform: string;
+              /**
+               * Iconify icon name (e.g., logos:chrome, logos:google-play-icon)
+               */
+              iconName: string;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Image showing devices (laptop and phone mockups)
+         */
+        deviceImage?: (number | null) | Media;
+        /**
+         * How long each platform name is displayed before switching
+         */
+        animationSpeed?: number | null;
+        backgroundColor?: ('white' | 'gray-50' | 'blue-50') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'platform';
+      }
+    | {
+        /**
          * Optional heading for the highlights section
          */
         heading?: string | null;
@@ -556,6 +599,31 @@ export interface PagesSelect<T extends boolean = true> {
                     iconifyIcon?: T;
                     id?: T;
                   };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        platform?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              animatedPlatforms?:
+                | T
+                | {
+                    platform?: T;
+                    id?: T;
+                  };
+              description?: T;
+              platformIcons?:
+                | T
+                | {
+                    platform?: T;
+                    iconName?: T;
+                    id?: T;
+                  };
+              deviceImage?: T;
+              animationSpeed?: T;
               backgroundColor?: T;
               id?: T;
               blockName?: T;

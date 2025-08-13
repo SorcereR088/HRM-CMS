@@ -7,6 +7,7 @@ import FeaturesBlock from '../blocks/Features'
 import Highlight from '../blocks/Highlight'
 import Testimonial from '../blocks/Testimonials'
 import Footer from '../blocks/Footer'
+import CrossPlatform from '../blocks/Crossplatform'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -87,7 +88,16 @@ const Pages: CollectionConfig = {
         initCollapsed: false,
         description: 'Drag and drop to reorder sections',
       },
-      blocks: [Navbar, Hero, TrustedBy, FeaturesBlock, Highlight, Testimonial, Footer],
+      blocks: [
+        Navbar,
+        Hero,
+        TrustedBy,
+        FeaturesBlock,
+        CrossPlatform,
+        Highlight,
+        Testimonial,
+        Footer,
+      ],
     },
     {
       name: 'status',

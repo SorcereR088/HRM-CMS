@@ -9,6 +9,7 @@ import FeaturesBlock from '../Components/blocks/FeaturesBlock'
 import HighlightBlock from '../Components/blocks/HighlightBlock'
 import TestimonialsBlock from '../Components/blocks/TestimonialsBlock'
 import FooterBlock from '../Components/blocks/FooterBlock'
+import CrossPlatform from '../Components/blocks/CrossPlatform'
 
 interface PageRendererProps {
   page: Page
@@ -36,6 +37,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
               return <TestimonialsBlock key={`${block.blockType}-${index}`} {...block} />
             case 'footer':
               return <FooterBlock key={`${block.blockType}-${index}`} {...block} />
+            case 'platform':
+              return <CrossPlatform key={`${block.blockType}-${index}`} {...block} />
             default:
               console.warn(`Unknown block type: ${(block as any).blockType}`)
               return null

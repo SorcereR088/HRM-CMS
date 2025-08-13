@@ -114,7 +114,7 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
       <div className="w-full">
         <div className="text-left mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-6 lg:px-40 w-full sm:w-2/3 lg:w-1/3">
           {heading && (
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+            <h2 className="ext-4xl md:text-[40px] font-bold text-gray-900 leading-tight mb-6">
               {heading}
             </h2>
           )}
@@ -164,7 +164,7 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
                 No testimonials found
               </h3>
               <p className="text-gray-500 text-sm">
-                Add testimonials through the page builder to showcase customer feedback.
+                Add testimonials through admin panel to showcase customer feedback.
               </p>
             </div>
           </div>
