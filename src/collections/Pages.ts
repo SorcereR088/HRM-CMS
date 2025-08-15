@@ -8,6 +8,7 @@ import Highlight from '../blocks/Highlight'
 import Testimonial from '../blocks/Testimonials'
 import Footer from '../blocks/Footer'
 import CrossPlatform from '../blocks/Crossplatform'
+import Form from '../blocks/Form'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -18,18 +19,6 @@ const Pages: CollectionConfig = {
         return `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/preview?slug=${doc.slug}&collection=pages`
       }
       return `http://localhost:3000/preview?slug=${doc.slug}&collection=pages`
-    },
-    livePreview: {
-      url: ({ data, collectionConfig, payload }) => {
-        const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
-
-        // For home page, use root path
-        if (data.slug === 'home') {
-          return `${baseUrl}/api/preview?slug=home&collection=pages`
-        }
-
-        return `${baseUrl}/api/preview?slug=${data.slug}&collection=pages`
-      },
     },
   },
   access: {
@@ -50,7 +39,7 @@ const Pages: CollectionConfig = {
       unique: true,
       admin: {
         description:
-          'This will be the URL path for this page (e.g., "home", "contact-us", "book-a-demo")',
+          'This will be the URL path for this page (e.g., "home", "contact-us", "about-us")',
       },
       hooks: {
         beforeChange: [
@@ -96,6 +85,7 @@ const Pages: CollectionConfig = {
         CrossPlatform,
         Highlight,
         Testimonial,
+        Form,
         Footer,
       ],
     },
@@ -121,7 +111,6 @@ const Pages: CollectionConfig = {
   hooks: {
     afterChange: [
       ({ doc, req, operation }) => {
-        // You can add cache revalidation logic here if needed
         console.log(`Page "${doc.title}" was ${operation}d`)
       },
     ],

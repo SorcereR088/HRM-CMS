@@ -1,11 +1,11 @@
-// storage-adapter-import-placeholder
-import { postgresAdapter } from '@payloadcms/db-postgres'
+import { buildConfig } from 'payload'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import sharp from 'sharp'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -72,5 +72,58 @@ export default buildConfig({
     'https://localhost:3000',
     process.env.PAYLOAD_PUBLIC_SERVER_URL || '',
   ].filter(Boolean),
-  plugins: [payloadCloudPlugin()],
+  plugins: [
+    payloadCloudPlugin(),
+    formBuilderPlugin({
+      fields: {
+        text: true,
+        email: true,
+        phone: true,
+        textarea: true,
+        number: true,
+        select: true,
+        checkbox: true,
+        country: true,
+        state: true,
+        payment: false,
+      },
+      formOverrides: {
+        fields: ({ defaultFields }) => [
+          {
+            name: 'formtitle',
+            type: 'text',
+            required: true,
+            admin: {
+              position: 'sidebar',
+            },
+          },
+          {
+            name: 'formconfirmationMessage',
+            type: 'richText',
+            editor: lexicalEditor(),
+            label: 'Confirmation Message',
+            admin: {
+              description: 'Message to show after form submission',
+            },
+          },
+          {
+            name: 'formredirect',
+            type: 'text',
+            label: 'Redirect URL (optional)',
+            admin: {
+              description: 'URL to redirect to after form submission (optional)',
+            },
+          },
+          ...defaultFields,
+        ],
+      },
+      formSubmissionOverrides: {
+        slug: 'form-submissions',
+        labels: {
+          singular: 'Form Submission',
+          plural: 'Form Submissions',
+        },
+      },
+    }),
+  ],
 })
