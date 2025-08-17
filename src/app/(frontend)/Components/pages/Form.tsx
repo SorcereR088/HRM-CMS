@@ -57,14 +57,21 @@ const BookDemoBlock: React.FC<BookDemoBlockProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch('/api/forms', {
+      // Transform form data to match Payload CMS form submission structure
+      const submissionData = Object.entries(formData).map(([field, value]) => ({
+        field,
+        value: value || '',
+      }))
+
+      const response = await fetch('/api/form-submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formId: 'book-demo', // Ensure this matches your form's slug
-          submissionData: formData,
+          form: 3, // Actual form ID from admin panel
+          submissionData,
         }),
       })
+      
       if (response.ok) {
         alert('Demo booked successfully!')
         setFormData({
@@ -75,10 +82,13 @@ const BookDemoBlock: React.FC<BookDemoBlockProps> = ({
           companySize: '',
         })
       } else {
-        console.error('Failed to book demo:', response.statusText)
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Failed to book demo:', response.statusText, errorData)
+        alert('Failed to book demo. Please try again.')
       }
     } catch (error) {
       console.error('Error booking demo:', error)
+      alert('Error booking demo. Please try again.')
     }
   }
 
