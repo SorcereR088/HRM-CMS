@@ -364,6 +364,46 @@ export interface Page {
         blockType: 'testimonials';
       }
     | {
+        /**
+         * Main heading for the book demo section. Use "YAK" and "HRM" for green styling.
+         */
+        heading: string;
+        /**
+         * Optional description text below the heading
+         */
+        description?: string | null;
+        features: {
+          title: string;
+          description: string;
+          iconType: 'upload' | 'url' | 'lucide' | 'iconify';
+          /**
+           * Upload an icon/image file
+           */
+          iconUpload?: (number | null) | Media;
+          /**
+           * Enter a URL to an icon/image
+           */
+          iconUrl?: string | null;
+          /**
+           * Enter a Lucide icon name (e.g., "User", "Search", "Settings")
+           */
+          lucideIcon?: string | null;
+          /**
+           * Enter an Iconify icon name (e.g., "mdi:account", "heroicons:search", "ph:gear")
+           */
+          iconifyIcon?: string | null;
+          id?: string | null;
+        }[];
+        /**
+         * Heading text for the contact form
+         */
+        formHeading: string;
+        backgroundColor?: ('white' | 'gray-50') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'book-demo';
+      }
+    | {
         form: number | Form;
         /**
          * Submit form without page reload
@@ -896,6 +936,28 @@ export interface PagesSelect<T extends boolean = true> {
                     company?: T;
                     id?: T;
                   };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'book-demo'?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              features?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    iconType?: T;
+                    iconUpload?: T;
+                    iconUrl?: T;
+                    lucideIcon?: T;
+                    iconifyIcon?: T;
+                    id?: T;
+                  };
+              formHeading?: T;
               backgroundColor?: T;
               id?: T;
               blockName?: T;

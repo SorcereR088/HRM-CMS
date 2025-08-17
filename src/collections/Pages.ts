@@ -9,6 +9,7 @@ import Testimonial from '../blocks/Testimonials'
 import Footer from '../blocks/Footer'
 import CrossPlatform from '../blocks/Crossplatform'
 import Form from '../blocks/Form'
+import BookADemo from '../blocks/BookADemo'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -85,6 +86,7 @@ const Pages: CollectionConfig = {
         CrossPlatform,
         Highlight,
         Testimonial,
+        BookADemo,
         Form,
         Footer,
       ],
