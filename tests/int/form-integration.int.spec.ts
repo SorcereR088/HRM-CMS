@@ -1,0 +1,44 @@
+import { describe, it, expect } from 'vitest'
+
+describe('Form System Integration', () => {
+  it('should have correct API endpoints structure', () => {
+    // Test that the expected API routes exist
+    const fs = require('fs')
+    const path = require('path')
+    
+    const formsApiPath = path.join(process.cwd(), 'src/app/api/forms/[id]/route.ts')
+    const submissionsApiPath = path.join(process.cwd(), 'src/app/api/form-submissions/route.ts')
+    
+    expect(fs.existsSync(formsApiPath)).toBe(true)
+    expect(fs.existsSync(submissionsApiPath)).toBe(true)
+  })
+
+  it('should have updated BookADemo component structure', () => {
+    const fs = require('fs')
+    const path = require('path')
+    
+    const bookADemoPath = path.join(process.cwd(), 'src/app/(frontend)/Components/blocks/BookADemoBlock.tsx')
+    const content = fs.readFileSync(bookADemoPath, 'utf8')
+    
+    // Check that it imports FormRenderer
+    expect(content).toContain('import FormRenderer')
+    
+    // Check that it uses fetch to get form data
+    expect(content).toContain('/api/forms/3')
+    
+    // Check that hardcoded form fields were removed
+    expect(content).not.toContain('handleSubmit = async (e: React.FormEvent)')
+  })
+
+  it('should have FormRenderer with correct property mappings', () => {
+    const fs = require('fs')
+    const path = require('path')
+    
+    const formRendererPath = path.join(process.cwd(), 'src/app/(frontend)/Components/FormRenderer.tsx')
+    const content = fs.readFileSync(formRendererPath, 'utf8')
+    
+    // Check that it uses the correct property name
+    expect(content).toContain('form.formredirect')
+    expect(content).not.toContain('form.redirect &&')
+  })
+})
