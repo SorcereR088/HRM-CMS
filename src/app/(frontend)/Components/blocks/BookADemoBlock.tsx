@@ -242,7 +242,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
                 )}
               </div>
 
-              {/* <div>
+              <div>
                 <select
                   name="companySize"
                   value={formData.companySize}
@@ -260,7 +260,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
                 {errors.companySize && (
                   <p className="text-red-500 text-sm mt-1">{errors.companySize}</p>
                 )}
-              </div> */}
+              </div>
 
               <button
                 type="submit"
