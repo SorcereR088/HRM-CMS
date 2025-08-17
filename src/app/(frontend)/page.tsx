@@ -56,7 +56,7 @@ export default async function HomePage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Home page not found</h1>
-          <p className="text-gray-600">Please create a page with slug "home" in your CMS.</p>
+          <p className="text-gray-600">Please create a page with slug &quot;home&quot; in your CMS.</p>
         </div>
       </div>
     )
