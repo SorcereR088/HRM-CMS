@@ -1,4 +1,3 @@
-// Enhanced version of FormBlock that can handle unpopulated relationships
 'use client'
 
 import React, { useState, useEffect } from 'react'
