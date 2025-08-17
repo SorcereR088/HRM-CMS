@@ -1,4 +1,3 @@
-// Create this file: src/app/api/forms/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'

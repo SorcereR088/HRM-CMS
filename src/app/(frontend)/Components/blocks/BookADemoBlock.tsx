@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Features from '../Features'
-import { Media } from '@/payload-types'
+import FormRenderer from '../FormRenderer'
+import { Media, Form } from '@/payload-types'
 
 interface FeatureItem {
   title: string
@@ -38,109 +39,30 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
     'gray-50': 'bg-gray-50',
   }[backgroundColor || 'white']
 
-  const [formData, setFormData] = useState({
-    fullName: '',
-    phoneNumber: '',
-    email: '',
-    companyName: '',
-    companySize: '',
-  })
+  const [form, setForm] = useState<Form | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  const companyOptions = [
-    { value: '', label: 'Select Company Size*' },
-    { value: '0-5', label: '0-5 Employees' },
-    { value: '6-20', label: '6-20 Employees' },
-    { value: '21-50', label: '21-50 Employees' },
-    { value: '51-100', label: '51-100 Employees' },
-    { value: '101-500', label: '101-500 Employees' },
-    { value: '500+', label: '500+ Employees' },
-  ]
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }))
-    }
-  }
-
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required'
-    }
-
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Phone number is required'
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address'
-    }
-
-    if (!formData.companyName.trim()) {
-      newErrors.companyName = 'Company name is required'
-    }
-
-    if (!formData.companySize) {
-      newErrors.companySize = 'Company size is required'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) {
-      return
-    }
-
-    try {
-      const response = await fetch('/api/forms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          form: 3, // Actual form ID from admin panel
-          submissionData: formData,
-        }),
-      })
-
-      if (response.ok) {
-        alert('Demo booked successfully!')
-        setFormData({
-          fullName: '',
-          phoneNumber: '',
-          email: '',
-          companyName: '',
-          companySize: '',
-        })
-        setErrors({})
-      } else {
-        console.error('Failed to book demo:', response.statusText)
-        alert('Failed to book demo. Please try again.')
+  useEffect(() => {
+    const fetchForm = async () => {
+      try {
+        const response = await fetch('/api/forms/3') // Form ID 3 as specified
+        if (response.ok) {
+          const formData = await response.json()
+          setForm(formData)
+        } else {
+          setError('Failed to load form')
+        }
+      } catch (err) {
+        setError('Error loading form')
+        console.error('Error fetching form:', err)
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('Error booking demo:', error)
-      alert('An error occurred. Please try again.')
     }
-  }
+
+    fetchForm()
+  }, [])
 
   // Function to style the heading with green YAK and HRM
   const renderStyledHeading = (text: string) => {
@@ -181,49 +103,23 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
             {formHeading && (
               <h3 className="text-xl font-semibold text-gray-900 mb-6">{formHeading}</h3>
             )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  placeholder="Full Name*"
-                  className={`w-full p-3 border rounded-lg ${
-                    errors.fullName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+            
+            {loading && (
+              <div className="animate-pulse space-y-4">
+                <div className="h-4 bg-gray-300 rounded w-1/4 mb-6"></div>
+                <div className="space-y-4">
+                  <div className="h-10 bg-gray-300 rounded"></div>
+                  <div className="h-10 bg-gray-300 rounded"></div>
+                  <div className="h-10 bg-gray-300 rounded"></div>
+                  <div className="h-10 bg-gray-300 rounded"></div>
+                  <div className="h-10 bg-gray-300 rounded"></div>
+                </div>
               </div>
-
-              <div>
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  placeholder="Phone Number*"
-                  className={`w-full p-3 border rounded-lg ${
-                    errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.phoneNumber && (
-                  <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
-                )}
-              </div>
-
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Email*"
-                  className={`w-full p-3 border rounded-lg ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+            )}
+            
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-800">{error}</p>
               </div>
 
               <div>
@@ -242,7 +138,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
                 )}
               </div>
 
-              <div>
+              {/* <div>
                 <select
                   name="companySize"
                   value={formData.companySize}
@@ -260,7 +156,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
                 {errors.companySize && (
                   <p className="text-red-500 text-sm mt-1">{errors.companySize}</p>
                 )}
-              </div>
+              </div> */}
 
               <button
                 type="submit"
