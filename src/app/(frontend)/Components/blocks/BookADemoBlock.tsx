@@ -64,7 +64,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
       ...prevData,
       [name]: value,
     }))
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
@@ -107,7 +107,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
@@ -117,11 +117,11 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formId: 'book-demo',
+          form: 3, // Actual form ID from admin panel
           submissionData: formData,
         }),
       })
-      
+
       if (response.ok) {
         alert('Demo booked successfully!')
         setFormData({
@@ -148,7 +148,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
     return parts.map((part, index) => {
       if (part === 'YAK' || part === 'HRM') {
         return (
-          <span key={index} className="text-green-600">
+          <span key={index} className="text-green-600 text-3xl sm:text-4xl lg:text-5xl font-bold">
             {part}
           </span>
         )
@@ -207,7 +207,9 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
                     errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
-                {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>}
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+                )}
               </div>
 
               <div>
@@ -235,10 +237,12 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
                     errors.companyName ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
-                {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>}
+                {errors.companyName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>
+                )}
               </div>
 
-              <div>
+              {/* <div>
                 <select
                   name="companySize"
                   value={formData.companySize}
@@ -248,21 +252,19 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
                   } ${!formData.companySize ? 'text-gray-500' : 'text-gray-900'}`}
                 >
                   {companyOptions.map((option) => (
-                    <option 
-                      key={option.value} 
-                      value={option.value}
-                      className="text-gray-900"
-                    >
+                    <option key={option.value} value={option.value} className="text-gray-900">
                       {option.label}
                     </option>
                   ))}
                 </select>
-                {errors.companySize && <p className="text-red-500 text-sm mt-1">{errors.companySize}</p>}
-              </div>
+                {errors.companySize && (
+                  <p className="text-red-500 text-sm mt-1">{errors.companySize}</p>
+                )}
+              </div> */}
 
               <button
                 type="submit"
-                className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                className="w-full bg-Teal text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
               >
                 Book a demo
               </button>

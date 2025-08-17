@@ -54,17 +54,20 @@ const BookDemoBlock: React.FC<BookDemoBlockProps> = ({
     }))
   }
 
+  // Change this in your handleSubmit function:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch('/api/forms', {
+      const response = await fetch('/api/form-submissions', {
+        // ✅ Changed from /api/forms
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formId: 'book-demo', // Ensure this matches your form's slug
+          form: 3, // ✅ Use the actual form ID from Payload CMS
           submissionData: formData,
         }),
       })
+
       if (response.ok) {
         alert('Demo booked successfully!')
         setFormData({
@@ -75,13 +78,15 @@ const BookDemoBlock: React.FC<BookDemoBlockProps> = ({
           companySize: '',
         })
       } else {
-        console.error('Failed to book demo:', response.statusText)
+        const errorData = await response.json()
+        console.error('Failed to book demo:', errorData)
+        alert('Failed to submit form. Please try again.')
       }
     } catch (error) {
       console.error('Error booking demo:', error)
+      alert('Network error. Please try again.')
     }
   }
-
   return (
     <section className={`py-16 lg:py-20 ${bgColorClass}`}>
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-[140px] grid grid-cols-1 lg:grid-cols-2 gap-12">
