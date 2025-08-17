@@ -5,11 +5,12 @@ import config from '@payload-config'
 import PageRenderer from '@/app/(frontend)/Components/PageRender'
 import { Page } from '@/payload-types'
 import { Metadata } from 'next'
+import LenisProvider from '../Providers/LenisProvider'
 
 interface PageProps {
-  params: {
-    slug: string
-  }
+  params: Promise<{
+    slug: string[]
+  }>
 }
 
 async function getPage(slug: string, isDraft: boolean): Promise<Page | null> {
@@ -38,9 +39,10 @@ async function getPage(slug: string, isDraft: boolean): Promise<Page | null> {
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = params
+  const { slug } = await params
+  const pageSlug = slug.join('/')
   const { isEnabled: isDraft } = await draftMode()
-  const page = await getPage(slug, isDraft)
+  const page = await getPage(pageSlug, isDraft)
 
   if (!page) {
     return {
@@ -55,40 +57,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function DynamicPage({ params }: PageProps) {
-  const { slug } = params
+  const { slug } = await params
+  const pageSlug = slug.join('/')
   const { isEnabled: isDraft } = await draftMode()
-  const page = await getPage(slug, isDraft)
+  const page = await getPage(pageSlug, isDraft)
 
   if (!page) {
     notFound()
   }
 
-  return <PageRenderer page={page} />
+  return (
+    <LenisProvider>
+      <PageRenderer page={page} />
+    </LenisProvider>
+  )
 }
 
 // Generate static paths for all published pages
 export async function generateStaticParams() {
-  const payload = await getPayload({ config })
-
-  try {
-    const pages = await payload.find({
-      collection: 'pages',
-      where: {
-        status: {
-          equals: 'published',
-        },
-        slug: {
-          not_equals: 'home', // Exclude home page as it's handled by the root route
-        },
-      },
-      limit: 100,
-    })
-
-    return pages.docs.map((page) => ({
-      slug: page.slug,
-    }))
-  } catch (error) {
-    console.error('Error generating static params:', error)
-    return []
-  }
+  // Skip static generation during build to avoid database connection issues
+  // Pages will be generated on-demand at runtime
+  return []
 }

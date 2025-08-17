@@ -42,6 +42,11 @@ next-env.d.ts
 
 /media
 
+# Testing/demo files
+src/app/(frontend)/demo-routing/
+vitest.unit.config.mts
+src/**/*.test.ts
+
 # Playwright
 node_modules/
 /test-results/

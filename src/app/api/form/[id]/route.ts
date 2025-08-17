@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const payload = await getPayload({ config })
-    const formId = params.id
+    const { id } = await context.params
+    const formId = id
 
     const form = await payload.findByID({
       collection: 'forms',

@@ -88,7 +88,7 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
       <div className="flex items-start justify-between leading-tight h-auto">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl text-teal-500">"</h1>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl text-teal-500">&quot;</h1>
         <StarRating rating={testimonial.rating} />
       </div>
       <blockquote className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow overflow-hidden">
