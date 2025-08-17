@@ -58,16 +58,14 @@ const BookDemoBlock: React.FC<BookDemoBlockProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch('/api/form-submissions', {
-        // ✅ Changed from /api/forms
+      const response = await fetch('/api/forms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          form: 3, // ✅ Use the actual form ID from Payload CMS
+          formId: 'book-demo', // Ensure this matches your form's slug
           submissionData: formData,
         }),
       })
-
       if (response.ok) {
         alert('Demo booked successfully!')
         setFormData({
@@ -78,13 +76,10 @@ const BookDemoBlock: React.FC<BookDemoBlockProps> = ({
           companySize: '',
         })
       } else {
-        const errorData = await response.json()
-        console.error('Failed to book demo:', errorData)
-        alert('Failed to submit form. Please try again.')
+        console.error('Failed to book demo:', response.statusText)
       }
     } catch (error) {
       console.error('Error booking demo:', error)
-      alert('Network error. Please try again.')
     }
   }
   return (
