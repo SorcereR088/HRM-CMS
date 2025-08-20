@@ -40,7 +40,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
     setError(null)
 
     try {
-      const response = await fetch('/api/form-submissions', {
+      // Updated to use the new submit-form endpoint
+      const response = await fetch('/api/submit-form', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +147,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       }
                       name={fieldName}
                       required={fieldData.required}
-                      value={formData[fieldName] || ''}
+                      value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       placeholder={fieldData.label || ''}
@@ -168,7 +169,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       id={fieldId}
                       name={fieldName}
                       required={fieldData.required}
-                      value={formData[fieldName] || ''}
+                      value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       rows={4}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
@@ -191,7 +192,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       id={fieldId}
                       name={fieldName}
                       required={fieldData.required}
-                      value={formData[fieldName] || ''}
+                      value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     >
@@ -215,7 +216,11 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       type="checkbox"
                       name={fieldName}
                       required={fieldData.required}
-                      checked={formData[fieldName] || false}
+                      checked={
+                        formData[fieldName] !== undefined
+                          ? formData[fieldName]
+                          : fieldData.defaultValue || false
+                      }
                       onChange={(e) => handleInputChange(fieldName, e.target.checked)}
                       className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
@@ -226,7 +231,6 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                   </div>
                 )
 
-              // Handle additional field types that might be available
               case 'phone':
                 return (
                   <div key={index}>
@@ -242,10 +246,58 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       type="tel"
                       name={fieldName}
                       required={fieldData.required}
-                      value={formData[fieldName] || ''}
+                      value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       placeholder={fieldData.label || ''}
+                    />
+                  </div>
+                )
+
+              case 'country':
+                // You might want to implement a country selector here
+                return (
+                  <div key={index}>
+                    <label
+                      htmlFor={fieldId}
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      {fieldData.label}
+                      {fieldData.required && <span className="text-red-500 ml-1">*</span>}
+                    </label>
+                    <input
+                      id={fieldId}
+                      type="text"
+                      name={fieldName}
+                      required={fieldData.required}
+                      value={formData[fieldName] || fieldData.defaultValue || ''}
+                      onChange={(e) => handleInputChange(fieldName, e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      placeholder={fieldData.label || 'Enter country'}
+                    />
+                  </div>
+                )
+
+              case 'state':
+                // You might want to implement a state selector here
+                return (
+                  <div key={index}>
+                    <label
+                      htmlFor={fieldId}
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      {fieldData.label}
+                      {fieldData.required && <span className="text-red-500 ml-1">*</span>}
+                    </label>
+                    <input
+                      id={fieldId}
+                      type="text"
+                      name={fieldName}
+                      required={fieldData.required}
+                      value={formData[fieldName] || fieldData.defaultValue || ''}
+                      onChange={(e) => handleInputChange(fieldName, e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      placeholder={fieldData.label || 'Enter state/province'}
                     />
                   </div>
                 )

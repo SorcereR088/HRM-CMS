@@ -88,12 +88,19 @@ export default buildConfig({
         payment: false,
       },
       formOverrides: {
+        slug: 'forms',
         admin: {
           useAsTitle: 'title',
+          defaultColumns: ['title', 'updatedAt'],
         },
-        fields: ({ defaultFields }) =>
-          defaultFields.map((field) => {
-            // Enable editing for the fields array
+        access: {
+          read: () => true,
+          create: () => true,
+          update: () => true,
+          delete: () => true,
+        },
+        fields: ({ defaultFields }) => [
+          ...defaultFields.map((field) => {
             if ('name' in field && field.name === 'fields') {
               return {
                 ...field,
@@ -106,6 +113,7 @@ export default buildConfig({
             }
             return field
           }),
+        ],
       },
       formSubmissionOverrides: {
         slug: 'form-submissions',
@@ -115,7 +123,16 @@ export default buildConfig({
         },
         admin: {
           useAsTitle: 'form',
+          defaultColumns: ['form', 'createdAt'],
         },
+        access: {
+          read: () => true,
+          create: () => true,
+          update: () => true,
+          delete: () => true,
+        },
+        // Remove the fields override completely since submissionData already exists
+        // The form builder plugin already creates this field
       },
     }),
   ],

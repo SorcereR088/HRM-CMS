@@ -25,7 +25,6 @@ interface BookADemoBlockProps {
   blockType: 'book-demo'
   id?: string | null
   blockName?: string | null
-  // Add form relationship
   form?: Form | number | string | null
 }
 
@@ -35,7 +34,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
   features = [],
   formHeading = "Fill out the form and we'll reach you out soon",
   backgroundColor = 'white',
-  form, // Form from PayloadCMS
+  form,
 }) => {
   const bgColorClass = {
     white: 'bg-white',
@@ -47,14 +46,18 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    console.log('BookADemoBlock: form prop received:', form)
+
     // If form is already populated (object), use it directly
     if (typeof form === 'object' && form !== null) {
+      console.log('BookADemoBlock: Using form object directly')
       setFormData(form)
       return
     }
 
     // If form is an ID (string or number), fetch the form data
     if (typeof form === 'string' || typeof form === 'number') {
+      console.log('BookADemoBlock: Fetching form by ID:', form)
       setLoading(true)
       fetchFormData(form)
     }
@@ -62,16 +65,24 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
 
   const fetchFormData = async (formId: string | number) => {
     try {
-      const response = await fetch(`/api/forms/${formId}`)
+      console.log('Fetching form data for ID:', formId)
+      // Use PayloadCMS's built-in API endpoint
+      const response = await fetch(`/api/forms/${formId}?depth=2`)
+
+      console.log('Form fetch response status:', response.status)
+
       if (response.ok) {
         const data = await response.json()
+        console.log('Form data received:', data)
         setFormData(data)
       } else {
-        setError('Failed to load form')
+        const errorText = await response.text()
+        console.error('Form fetch failed:', response.status, errorText)
+        setError(`Failed to load form`)
       }
     } catch (err) {
-      setError('Error loading form')
       console.error('Error fetching form:', err)
+      setError(`Unable to load form`)
     } finally {
       setLoading(false)
     }
@@ -116,7 +127,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
             {formHeading && (
               <h3 className="text-xl font-semibold text-gray-900 mb-6">{formHeading}</h3>
             )}
-            
+
             {loading && (
               <div className="space-y-4">
                 <div className="animate-pulse">
@@ -133,18 +144,18 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-800">{error}</p>
+                <p className="text-red-800 font-medium">An error has occurred.</p>
               </div>
             )}
 
-            {formData && !loading && !error && (
-              <FormRenderer form={formData} />
-            )}
+            {formData && !loading && !error && <FormRenderer form={formData} />}
 
             {!formData && !loading && !error && !form && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-yellow-800">
-                  No form configured. Please select a form in the admin panel.
+                <p className="text-yellow-800 font-medium">Select Form</p>
+                <p className="text-yellow-700 text-sm mt-1">
+                  Choose a form created with the Form Builder plugin. Leave empty to use default
+                  fields.
                 </p>
               </div>
             )}
