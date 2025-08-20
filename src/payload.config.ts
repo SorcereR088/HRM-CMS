@@ -163,6 +163,11 @@ export default buildConfig({
           update: ({ req: { user } }) => !!user, // Only authenticated users can update submissions
           delete: ({ req: { user } }) => !!user, // Only authenticated users can delete submissions
         },
+        // Add admin configuration for better UX
+        admin: {
+          defaultColumns: ['form', 'createdAt'],
+          useAsTitle: 'id',
+        },
       },
     }),
   ],

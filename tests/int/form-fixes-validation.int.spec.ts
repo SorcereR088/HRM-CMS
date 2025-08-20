@@ -63,4 +63,17 @@ describe('Form System Validation', () => {
     // Check that FormRenderer is properly used
     expect(content).toContain('<FormRenderer form={form}')
   })
+
+  it('should have form duplication API endpoint', () => {
+    const fs = require('fs')
+    const path = require('path')
+    
+    const duplicateApiPath = path.join(process.cwd(), 'src/app/api/forms/[id]/duplicate/route.ts')
+    const content = fs.readFileSync(duplicateApiPath, 'utf8')
+    
+    // Check that the duplicate endpoint exists and has proper structure
+    expect(content).toContain('export async function POST')
+    expect(content).toContain('Form duplicated successfully')
+    expect(content).toContain('(Copy)')
+  })
 })
