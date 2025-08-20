@@ -88,40 +88,33 @@ export default buildConfig({
         payment: false,
       },
       formOverrides: {
-        fields: ({ defaultFields }) => [
-          {
-            name: 'formtitle',
-            type: 'text',
-            required: true,
-            admin: {
-              position: 'sidebar',
-            },
-          },
-          {
-            name: 'formconfirmationMessage',
-            type: 'richText',
-            editor: lexicalEditor(),
-            label: 'Confirmation Message',
-            admin: {
-              description: 'Message to show after form submission',
-            },
-          },
-          {
-            name: 'formredirect',
-            type: 'text',
-            label: 'Redirect URL (optional)',
-            admin: {
-              description: 'URL to redirect to after form submission (optional)',
-            },
-          },
-          ...defaultFields,
-        ],
+        admin: {
+          useAsTitle: 'title',
+        },
+        fields: ({ defaultFields }) =>
+          defaultFields.map((field) => {
+            // Enable editing for the fields array
+            if ('name' in field && field.name === 'fields') {
+              return {
+                ...field,
+                admin: {
+                  ...field.admin,
+                  readOnly: false,
+                  disabled: false,
+                },
+              } as typeof field
+            }
+            return field
+          }),
       },
       formSubmissionOverrides: {
         slug: 'form-submissions',
         labels: {
           singular: 'Form Submission',
           plural: 'Form Submissions',
+        },
+        admin: {
+          useAsTitle: 'form',
         },
       },
     }),

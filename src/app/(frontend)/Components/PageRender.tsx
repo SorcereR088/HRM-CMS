@@ -11,7 +11,7 @@ import TestimonialsBlock from '../Components/blocks/TestimonialsBlock'
 import FooterBlock from '../Components/blocks/FooterBlock'
 import CrossPlatform from '../Components/blocks/CrossPlatform'
 import FormBlock from '../Components/blocks/FormBlock'
-import BookADemoBlock from '../Components/blocks/BookADemoBlock'
+import BookADemoBlock from '../Components/blocks/BookADemoBlock' // Add this import
 
 interface PageRendererProps {
   page: Page
@@ -41,10 +41,10 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
               return <FooterBlock key={`${block.blockType}-${index}`} {...block} />
             case 'platform':
               return <CrossPlatform key={`${block.blockType}-${index}`} {...block} />
-            case 'book-demo':
-              return <BookADemoBlock key={`${block.blockType}-${index}`} {...block} />
             case 'form-block':
               return <FormBlock key={`${block.blockType}-${index}`} {...block} />
+            case 'book-demo': // Add this case
+              return <BookADemoBlock key={`${block.blockType}-${index}`} {...block} />
             default:
               console.warn(`Unknown block type: ${(block as any).blockType}`)
               return null

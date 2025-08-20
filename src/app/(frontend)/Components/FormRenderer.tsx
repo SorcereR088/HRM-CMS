@@ -56,8 +56,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
         setFormData({})
 
         // Handle redirect if specified and exists on form
-        if (form.formredirect && typeof form.formredirect === 'string') {
-          window.location.href = form.formredirect
+        if (form.redirect && typeof form.redirect === 'string') {
+          window.location.href = form.redirect
         }
       } else {
         const errorData = await response.json()
@@ -72,7 +72,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
   }
 
   // Check if form has redirect property safely
-  const hasRedirect = form.formredirect && typeof form.formredirect === 'string'
+  const hasRedirect = form.redirect && typeof form.redirect === 'string'
 
   if (isSubmitted && !hasRedirect) {
     return (

@@ -364,40 +364,25 @@ export interface Page {
         blockType: 'testimonials';
       }
     | {
-        /**
-         * Main heading for the book demo section. Use "YAK" and "HRM" for green styling.
-         */
-        heading: string;
-        /**
-         * Optional description text below the heading
-         */
+        heading?: string | null;
         description?: string | null;
-        features: {
-          title: string;
-          description: string;
-          iconType: 'upload' | 'url' | 'lucide' | 'iconify';
-          /**
-           * Upload an icon/image file
-           */
-          iconUpload?: (number | null) | Media;
-          /**
-           * Enter a URL to an icon/image
-           */
-          iconUrl?: string | null;
-          /**
-           * Enter a Lucide icon name (e.g., "User", "Search", "Settings")
-           */
-          lucideIcon?: string | null;
-          /**
-           * Enter an Iconify icon name (e.g., "mdi:account", "heroicons:search", "ph:gear")
-           */
-          iconifyIcon?: string | null;
-          id?: string | null;
-        }[];
+        features?:
+          | {
+              title: string;
+              description: string;
+              iconType: 'upload' | 'url' | 'lucide' | 'iconify';
+              iconUpload?: (number | null) | Media;
+              iconUrl?: string | null;
+              lucideIcon?: string | null;
+              iconifyIcon?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        formHeading?: string | null;
         /**
-         * Heading text for the contact form
+         * Choose a form created with the Form Builder plugin. Leave empty to use default fields.
          */
-        formHeading: string;
+        form?: (number | null) | Form;
         backgroundColor?: ('white' | 'gray-50') | null;
         id?: string | null;
         blockName?: string | null;
@@ -464,29 +449,6 @@ export interface Page {
  */
 export interface Form {
   id: number;
-  formtitle: string;
-  /**
-   * Message to show after form submission
-   */
-  formconfirmationMessage?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * URL to redirect to after form submission (optional)
-   */
-  formredirect?: string | null;
   title: string;
   fields?:
     | (
@@ -958,6 +920,7 @@ export interface PagesSelect<T extends boolean = true> {
                     id?: T;
                   };
               formHeading?: T;
+              form?: T;
               backgroundColor?: T;
               id?: T;
               blockName?: T;
@@ -1020,9 +983,6 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "forms_select".
  */
 export interface FormsSelect<T extends boolean = true> {
-  formtitle?: T;
-  formconfirmationMessage?: T;
-  formredirect?: T;
   title?: T;
   fields?:
     | T

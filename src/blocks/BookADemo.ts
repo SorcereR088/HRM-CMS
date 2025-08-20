@@ -1,57 +1,28 @@
+// Update your BookADemo block configuration file
 import { Block } from 'payload'
 
-const BookADemoBlock: Block = {
+const BookADemo: Block = {
   slug: 'book-demo',
   labels: {
-    singular: 'Book a Demo Section',
-    plural: 'Book a Demo Sections',
+    singular: 'Book a Demo',
+    plural: 'Book a Demo Blocks',
   },
   fields: [
     {
       name: 'heading',
       type: 'text',
-      label: 'Main Heading',
-      required: true,
+      label: 'Heading',
       defaultValue: 'Experience YAK HRM in action',
-      admin: {
-        description: 'Main heading for the book demo section. Use "YAK" and "HRM" for green styling.',
-      },
     },
     {
       name: 'description',
       type: 'textarea',
       label: 'Description',
-      required: false,
-      admin: {
-        description: 'Optional description text below the heading',
-      },
     },
     {
       name: 'features',
       type: 'array',
-      label: 'Features List',
-      required: true,
-      minRows: 1,
-      defaultValue: [
-        {
-          title: 'Streamlined Operations',
-          description: 'Handle HR tasks like attendance, payroll, and employee data from one easy-to-use platform',
-          iconType: 'lucide',
-          lucideIcon: 'Zap',
-        },
-        {
-          title: 'Accurate & Compliant',
-          description: 'Reduce errors and stay aligned with company policies and legal standards through automation',
-          iconType: 'lucide',
-          lucideIcon: 'Shield',
-        },
-        {
-          title: 'Fits Any Team Size',
-          description: 'Whether you\'re a small team or a large organization, the system scales with your needs',
-          iconType: 'lucide',
-          lucideIcon: 'Users',
-        },
-      ],
+      label: 'Features',
       fields: [
         {
           name: 'title',
@@ -70,34 +41,21 @@ const BookADemoBlock: Block = {
           type: 'select',
           label: 'Icon Type',
           required: true,
-          defaultValue: 'lucide',
           options: [
-            {
-              label: 'Upload Icon',
-              value: 'upload',
-            },
-            {
-              label: 'Icon URL',
-              value: 'url',
-            },
-            {
-              label: 'Lucide Icon',
-              value: 'lucide',
-            },
-            {
-              label: 'Iconify Icon',
-              value: 'iconify',
-            },
+            { label: 'Upload Icon', value: 'upload' },
+            { label: 'Icon URL', value: 'url' },
+            { label: 'Lucide Icon', value: 'lucide' },
+            { label: 'Iconify Icon', value: 'iconify' },
           ],
+          defaultValue: 'lucide',
         },
         {
           name: 'iconUpload',
           type: 'upload',
-          relationTo: 'media',
           label: 'Upload Icon',
+          relationTo: 'media',
           admin: {
-            condition: (_, siblingData) => siblingData.iconType === 'upload',
-            description: 'Upload an icon/image file',
+            condition: (data, siblingData) => siblingData?.iconType === 'upload',
           },
         },
         {
@@ -105,8 +63,7 @@ const BookADemoBlock: Block = {
           type: 'text',
           label: 'Icon URL',
           admin: {
-            condition: (_, siblingData) => siblingData.iconType === 'url',
-            description: 'Enter a URL to an icon/image',
+            condition: (data, siblingData) => siblingData?.iconType === 'url',
           },
         },
         {
@@ -114,8 +71,7 @@ const BookADemoBlock: Block = {
           type: 'text',
           label: 'Lucide Icon Name',
           admin: {
-            condition: (_, siblingData) => siblingData.iconType === 'lucide',
-            description: 'Enter a Lucide icon name (e.g., "User", "Search", "Settings")',
+            condition: (data, siblingData) => siblingData?.iconType === 'lucide',
           },
         },
         {
@@ -123,9 +79,7 @@ const BookADemoBlock: Block = {
           type: 'text',
           label: 'Iconify Icon Name',
           admin: {
-            condition: (_, siblingData) => siblingData.iconType === 'iconify',
-            description:
-              'Enter an Iconify icon name (e.g., "mdi:account", "heroicons:search", "ph:gear")',
+            condition: (data, siblingData) => siblingData?.iconType === 'iconify',
           },
         },
       ],
@@ -134,10 +88,16 @@ const BookADemoBlock: Block = {
       name: 'formHeading',
       type: 'text',
       label: 'Form Heading',
-      required: true,
       defaultValue: "Fill out the form and we'll reach you out soon",
+    },
+    {
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'forms',
+      label: 'Select Form',
       admin: {
-        description: 'Heading text for the contact form',
+        description:
+          'Choose a form created with the Form Builder plugin. Leave empty to use default fields.',
       },
     },
     {
@@ -145,18 +105,12 @@ const BookADemoBlock: Block = {
       type: 'select',
       label: 'Background Color',
       options: [
-        {
-          label: 'White',
-          value: 'white',
-        },
-        {
-          label: 'Light Gray',
-          value: 'gray-50',
-        },
+        { label: 'White', value: 'white' },
+        { label: 'Gray', value: 'gray-50' },
       ],
       defaultValue: 'white',
     },
   ],
 }
 
-export default BookADemoBlock
+export default BookADemo
