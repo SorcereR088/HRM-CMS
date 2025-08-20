@@ -88,6 +88,40 @@ export default buildConfig({
         payment: false,
       },
       formOverrides: {
+        access: {
+          read: () => true, // Allow public read access for frontend form rendering
+          create: ({ req: { user } }) => !!user, // Only authenticated users can create forms
+          update: ({ req: { user } }) => !!user, // Only authenticated users can update forms
+          delete: ({ req: { user } }) => !!user, // Only authenticated users can delete forms
+        },
+        hooks: {
+          beforeDelete: [
+            async ({ req, id }) => {
+              // Cascade delete form submissions when a form is deleted
+              const payload = req.payload
+              try {
+                const submissions = await payload.find({
+                  collection: 'form-submissions',
+                  where: {
+                    form: {
+                      equals: id,
+                    },
+                  },
+                })
+                
+                // Delete all related submissions
+                for (const submission of submissions.docs) {
+                  await payload.delete({
+                    collection: 'form-submissions',
+                    id: submission.id,
+                  })
+                }
+              } catch (error) {
+                console.error('Error deleting related form submissions:', error)
+              }
+            },
+          ],
+        },
         fields: ({ defaultFields }) => [
           {
             name: 'formtitle',
@@ -122,6 +156,12 @@ export default buildConfig({
         labels: {
           singular: 'Form Submission',
           plural: 'Form Submissions',
+        },
+        access: {
+          read: ({ req: { user } }) => !!user, // Only authenticated users can read submissions
+          create: () => true, // Allow public form submissions
+          update: ({ req: { user } }) => !!user, // Only authenticated users can update submissions
+          delete: ({ req: { user } }) => !!user, // Only authenticated users can delete submissions
         },
       },
     }),

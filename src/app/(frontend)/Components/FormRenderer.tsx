@@ -2,6 +2,7 @@
 
 import { Form } from '@/payload-types'
 import React, { useState } from 'react'
+import { serializeRichText } from './utils/serializeRichText'
 
 // Define proper types for form fields based on PayloadCMS form builder structure
 interface FormField {
@@ -29,15 +30,75 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   const handleInputChange = (name: string, value: any) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+  }
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {}
+    
+    if (form.fields && Array.isArray(form.fields)) {
+      form.fields.forEach((field: any, index: number) => {
+        const fieldData = field as FormField
+        const fieldName = fieldData.name || `field-${index}`
+        const value = formData[fieldName]
+
+        if (fieldData.required) {
+          if (!value || (typeof value === 'string' && value.trim() === '')) {
+            errors[fieldName] = `${fieldData.label || 'This field'} is required`
+          }
+        }
+
+        // Email validation
+        if (fieldData.blockType === 'email' && value) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          if (!emailRegex.test(value)) {
+            errors[fieldName] = 'Please enter a valid email address'
+          }
+        }
+
+        // Phone validation
+        if (fieldData.blockType === 'phone' && value) {
+          const phoneRegex = /^[\+]?[\(\)\s\-\d]+$/
+          if (!phoneRegex.test(value)) {
+            errors[fieldName] = 'Please enter a valid phone number'
+          }
+        }
+
+        // Number validation
+        if (fieldData.blockType === 'number' && value) {
+          if (isNaN(value)) {
+            errors[fieldName] = 'Please enter a valid number'
+          }
+        }
+      })
+    }
+
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
     setError(null)
+
+    // Validate form before submission
+    if (!validateForm()) {
+      return
+    }
+
+    setIsSubmitting(true)
 
     try {
       const response = await fetch('/api/form-submissions', {
@@ -89,12 +150,11 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
           </div>
           <div className="ml-3">
             <h3 className="text-sm font-medium text-green-800">Form submitted successfully!</h3>
-            {form.confirmationMessage && (
+            {form.formconfirmationMessage && (
               <div
                 className="mt-2 text-sm text-green-700"
                 dangerouslySetInnerHTML={{
-                  __html:
-                    typeof form.confirmationMessage === 'string' ? form.confirmationMessage : '',
+                  __html: serializeRichText(form.formconfirmationMessage)
                 }}
               />
             )}
@@ -148,9 +208,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       required={fieldData.required}
                       value={formData[fieldName] || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                        validationErrors[fieldName] ? 'border-red-500' : 'border-gray-300'
+                      }`}
                       placeholder={fieldData.label || ''}
                     />
+                    {validationErrors[fieldName] && (
+                      <p className="text-red-500 text-sm mt-1">{validationErrors[fieldName]}</p>
+                    )}
                   </div>
                 )
 
@@ -171,9 +236,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       value={formData[fieldName] || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical ${
+                        validationErrors[fieldName] ? 'border-red-500' : 'border-gray-300'
+                      }`}
                       placeholder={fieldData.label || ''}
                     />
+                    {validationErrors[fieldName] && (
+                      <p className="text-red-500 text-sm mt-1">{validationErrors[fieldName]}</p>
+                    )}
                   </div>
                 )
 
@@ -193,7 +263,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       required={fieldData.required}
                       value={formData[fieldName] || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                        validationErrors[fieldName] ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     >
                       <option value="">Select an option</option>
                       {fieldData.options &&
@@ -204,6 +276,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                           </option>
                         ))}
                     </select>
+                    {validationErrors[fieldName] && (
+                      <p className="text-red-500 text-sm mt-1">{validationErrors[fieldName]}</p>
+                    )}
                   </div>
                 )
 
@@ -244,9 +319,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       required={fieldData.required}
                       value={formData[fieldName] || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                        validationErrors[fieldName] ? 'border-red-500' : 'border-gray-300'
+                      }`}
                       placeholder={fieldData.label || ''}
                     />
+                    {validationErrors[fieldName] && (
+                      <p className="text-red-500 text-sm mt-1">{validationErrors[fieldName]}</p>
+                    )}
                   </div>
                 )
 

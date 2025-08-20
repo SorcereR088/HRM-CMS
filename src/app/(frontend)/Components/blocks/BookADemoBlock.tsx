@@ -121,50 +121,11 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-800">{error}</p>
               </div>
-
-              <div>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  placeholder="Company Name*"
-                  className={`w-full p-3 border rounded-lg ${
-                    errors.companyName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.companyName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>
-                )}
-              </div>
-
-              {/* <div>
-                <select
-                  name="companySize"
-                  value={formData.companySize}
-                  onChange={handleChange}
-                  className={`w-full p-3 border rounded-lg ${
-                    errors.companySize ? 'border-red-500' : 'border-gray-300'
-                  } ${!formData.companySize ? 'text-gray-500' : 'text-gray-900'}`}
-                >
-                  {companyOptions.map((option) => (
-                    <option key={option.value} value={option.value} className="text-gray-900">
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                {errors.companySize && (
-                  <p className="text-red-500 text-sm mt-1">{errors.companySize}</p>
-                )}
-              </div> */}
-
-              <button
-                type="submit"
-                className="w-full bg-Teal text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-              >
-                Book a demo
-              </button>
-            </form>
+            )}
+            
+            {form && !loading && !error && (
+              <FormRenderer form={form} />
+            )}
           </div>
         </div>
       </div>
