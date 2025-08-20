@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Features from '../Features'
+import FormRenderer from '../FormRenderer'
 import { Media, Form } from '@/payload-types'
 
 interface FeatureItem {
@@ -41,117 +42,38 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
     'gray-50': 'bg-gray-50',
   }[backgroundColor || 'white']
 
-  const [formData, setFormData] = useState<Record<string, any>>({})
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [formData, setFormData] = useState<Form | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Get form data (handle both populated form object and form ID)
-  const formObject = typeof form === 'object' && form !== null ? form : null
-  const formId = typeof form === 'object' && form !== null ? form.id : form
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }))
-    }
-  }
-
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
-
-    // Dynamic validation based on form fields if available
-    if (formObject?.fields) {
-      formObject.fields.forEach((field: any) => {
-        const fieldName = field.name
-        const fieldValue = formData[fieldName]
-
-        if (field.required) {
-          if (!fieldValue || (typeof fieldValue === 'string' && !fieldValue.trim())) {
-            newErrors[fieldName] = `${field.label || fieldName} is required`
-          }
-        }
-
-        // Email validation
-        if (field.blockType === 'email' && fieldValue && !validateEmail(fieldValue)) {
-          newErrors[fieldName] = 'Please enter a valid email address'
-        }
-      })
-    } else {
-      // Fallback to hardcoded validation
-      if (!formData.fullName?.trim()) {
-        newErrors.fullName = 'Full name is required'
-      }
-      if (!formData.phoneNumber?.trim()) {
-        newErrors.phoneNumber = 'Phone number is required'
-      }
-      if (!formData.email?.trim()) {
-        newErrors.email = 'Email is required'
-      } else if (!validateEmail(formData.email)) {
-        newErrors.email = 'Please enter a valid email address'
-      }
-      if (!formData.companyName?.trim()) {
-        newErrors.companyName = 'Company name is required'
-      }
-      if (!formData.companySize) {
-        newErrors.companySize = 'Company size is required'
-      }
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) {
+  useEffect(() => {
+    // If form is already populated (object), use it directly
+    if (typeof form === 'object' && form !== null) {
+      setFormData(form)
       return
     }
 
-    setIsSubmitting(true)
+    // If form is an ID (string or number), fetch the form data
+    if (typeof form === 'string' || typeof form === 'number') {
+      setLoading(true)
+      fetchFormData(form)
+    }
+  }, [form])
 
+  const fetchFormData = async (formId: string | number) => {
     try {
-      const response = await fetch('/api/form-submissions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          form: formId, // Use the form ID from PayloadCMS
-          submissionData: formData,
-        }),
-      })
-
+      const response = await fetch(`/api/forms/${formId}`)
       if (response.ok) {
-        setIsSubmitted(true)
-        setFormData({})
-        setErrors({})
-
-        // Handle redirect if specified in form
-        if (formObject?.redirect) {
-          setTimeout(() => {
-            window.location.href = formObject.redirect as unknown as string
-          }, 2000)
-        }
+        const data = await response.json()
+        setFormData(data)
       } else {
-        const errorData = await response.json()
-        alert(errorData.message || 'Failed to submit form. Please try again.')
+        setError('Failed to load form')
       }
-    } catch (error) {
-      console.error('Error submitting form:', error)
-      alert('An error occurred. Please try again.')
+    } catch (err) {
+      setError('Error loading form')
+      console.error('Error fetching form:', err)
     } finally {
-      setIsSubmitting(false)
+      setLoading(false)
     }
   }
 
@@ -168,218 +90,6 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
       }
       return part
     })
-  }
-
-  // Render dynamic form fields if form is available
-  const renderFormFields = () => {
-    if (formObject?.fields && Array.isArray(formObject.fields)) {
-      return formObject.fields.map((field: any, index: number) => {
-        const fieldName = field.name || `field-${index}`
-        const fieldId = `${fieldName}-${index}`
-
-        switch (field.blockType) {
-          case 'text':
-          case 'email':
-          case 'phone':
-            return (
-              <div key={index}>
-                <input
-                  id={fieldId}
-                  type={
-                    field.blockType === 'email'
-                      ? 'email'
-                      : field.blockType === 'phone'
-                        ? 'tel'
-                        : 'text'
-                  }
-                  name={fieldName}
-                  value={formData[fieldName] || ''}
-                  onChange={handleChange}
-                  placeholder={`${field.label}${field.required ? '*' : ''}`}
-                  className={`w-full p-3 border rounded-lg ${
-                    errors[fieldName] ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  required={field.required}
-                />
-                {errors[fieldName] && (
-                  <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>
-                )}
-              </div>
-            )
-
-          case 'textarea':
-            return (
-              <div key={index}>
-                <textarea
-                  id={fieldId}
-                  name={fieldName}
-                  value={formData[fieldName] || ''}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, [fieldName]: e.target.value }))
-                  }
-                  placeholder={`${field.label}${field.required ? '*' : ''}`}
-                  rows={4}
-                  className={`w-full p-3 border rounded-lg ${
-                    errors[fieldName] ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  required={field.required}
-                />
-                {errors[fieldName] && (
-                  <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>
-                )}
-              </div>
-            )
-
-          case 'select':
-            return (
-              <div key={index}>
-                <select
-                  id={fieldId}
-                  name={fieldName}
-                  value={formData[fieldName] || ''}
-                  onChange={handleChange}
-                  className={`w-full p-3 border rounded-lg ${
-                    errors[fieldName] ? 'border-red-500' : 'border-gray-300'
-                  } ${!formData[fieldName] ? 'text-gray-500' : 'text-gray-900'}`}
-                  required={field.required}
-                >
-                  <option value="">
-                    {field.label}
-                    {field.required ? '*' : ''}
-                  </option>
-                  {field.options?.map((option: any, idx: number) => (
-                    <option key={idx} value={option.value} className="text-gray-900">
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                {errors[fieldName] && (
-                  <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>
-                )}
-              </div>
-            )
-
-          default:
-            return null
-        }
-      })
-    }
-
-    // Fallback to hardcoded fields if no form is configured
-    return (
-      <>
-        <div>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName || ''}
-            onChange={handleChange}
-            placeholder="Full Name*"
-            className={`w-full p-3 border rounded-lg ${
-              errors.fullName ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-          {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
-        </div>
-
-        <div>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber || ''}
-            onChange={handleChange}
-            placeholder="Phone Number*"
-            className={`w-full p-3 border rounded-lg ${
-              errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-          {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>}
-        </div>
-
-        <div>
-          <input
-            type="email"
-            name="email"
-            value={formData.email || ''}
-            onChange={handleChange}
-            placeholder="Email*"
-            className={`w-full p-3 border rounded-lg ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-        </div>
-
-        <div>
-          <input
-            type="text"
-            name="companyName"
-            value={formData.companyName || ''}
-            onChange={handleChange}
-            placeholder="Company Name*"
-            className={`w-full p-3 border rounded-lg ${
-              errors.companyName ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-          {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>}
-        </div>
-
-        <div>
-          <select
-            name="companySize"
-            value={formData.companySize || ''}
-            onChange={handleChange}
-            className={`w-full p-3 border rounded-lg ${
-              errors.companySize ? 'border-red-500' : 'border-gray-300'
-            } ${!formData.companySize ? 'text-gray-500' : 'text-gray-900'}`}
-          >
-            <option value="">Select Company Size*</option>
-            <option value="0-5">0-5 Employees</option>
-            <option value="6-20">6-20 Employees</option>
-            <option value="21-50">21-50 Employees</option>
-            <option value="51-100">51-100 Employees</option>
-            <option value="101-500">101-500 Employees</option>
-            <option value="500+">500+ Employees</option>
-          </select>
-          {errors.companySize && <p className="text-red-500 text-sm mt-1">{errors.companySize}</p>}
-        </div>
-      </>
-    )
-  }
-
-  // Show success message
-  if (isSubmitted) {
-    return (
-      <section className={`py-16 lg:py-20 ${bgColorClass}`}>
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-[140px]">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
-            <div className="flex justify-center mb-4">
-              <svg
-                className="h-12 w-12 text-green-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-green-800 mb-2">Thank you!</h3>
-            <p className="text-green-700">
-              {formObject?.confirmationMessage ? (
-                <div dangerouslySetInnerHTML={{ __html: formObject.confirmationMessage }} />
-              ) : (
-                "Your demo has been booked successfully. We'll reach out to you soon!"
-              )}
-            </p>
-          </div>
-        </div>
-      </section>
-    )
   }
 
   return (
@@ -406,17 +116,38 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
             {formHeading && (
               <h3 className="text-xl font-semibold text-gray-900 mb-6">{formHeading}</h3>
             )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {renderFormFields()}
+            
+            {loading && (
+              <div className="space-y-4">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-300 rounded w-1/4 mb-6"></div>
+                  <div className="space-y-4">
+                    <div className="h-10 bg-gray-300 rounded"></div>
+                    <div className="h-10 bg-gray-300 rounded"></div>
+                    <div className="h-20 bg-gray-300 rounded"></div>
+                    <div className="h-10 bg-gray-300 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            )}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-Teal text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Submitting...' : 'Book a demo'}
-              </button>
-            </form>
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-800">{error}</p>
+              </div>
+            )}
+
+            {formData && !loading && !error && (
+              <FormRenderer form={formData} />
+            )}
+
+            {!formData && !loading && !error && !form && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-yellow-800">
+                  No form configured. Please select a form in the admin panel.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

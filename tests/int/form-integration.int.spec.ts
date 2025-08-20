@@ -23,10 +23,13 @@ describe('Form System Integration', () => {
     // Check that it imports FormRenderer
     expect(content).toContain('import FormRenderer')
     
-    // Check that it uses fetch to get form data
-    expect(content).toContain('/api/forms/3')
+    // Check that it uses FormRenderer component
+    expect(content).toContain('<FormRenderer form={formData}')
     
-    // Check that hardcoded form fields were removed
+    // Check that it fetches form data from API
+    expect(content).toContain('/api/forms/')
+    
+    // Check that old hardcoded form submission logic was removed
     expect(content).not.toContain('handleSubmit = async (e: React.FormEvent)')
   })
 
@@ -38,7 +41,7 @@ describe('Form System Integration', () => {
     const content = fs.readFileSync(formRendererPath, 'utf8')
     
     // Check that it uses the correct property name
-    expect(content).toContain('form.formredirect')
-    expect(content).not.toContain('form.redirect &&')
+    expect(content).toContain('form.redirect?.url')
+    expect(content).not.toContain('form.formredirect')
   })
 })
