@@ -97,7 +97,8 @@ const BookADemo: Block = {
       label: 'Select Form',
       admin: {
         description:
-          'Choose a form created with the Form Builder plugin. Leave empty to use default fields.',
+          'Choose a form created with the Form Builder plugin. Leave empty to use default hardcoded fields (Full Name, Phone, Email, Company Name, Company Size). You can create and edit forms in the Forms section of the admin panel.',
+        allowCreate: true,
       },
     },
     {

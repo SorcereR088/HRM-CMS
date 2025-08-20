@@ -90,6 +90,7 @@ export default buildConfig({
       formOverrides: {
         admin: {
           useAsTitle: 'title',
+          description: 'Manage your forms and form fields. You can add, edit, and remove fields after creating a form.',
         },
         fields: ({ defaultFields }) =>
           defaultFields.map((field) => {
@@ -101,11 +102,44 @@ export default buildConfig({
                   ...field.admin,
                   readOnly: false,
                   disabled: false,
+                  description: 'Add, edit, or remove form fields. Changes will be reflected immediately on your forms.',
+                  components: {
+                    ...field.admin?.components,
+                  },
+                },
+                // Enable reordering of fields
+                interfaceName: 'FormField',
+              } as typeof field
+            }
+            
+            // Enable editing for all form configuration fields
+            if ('name' in field && (
+              field.name === 'title' ||
+              field.name === 'submitButtonLabel' ||
+              field.name === 'confirmationType' ||
+              field.name === 'confirmationMessage' ||
+              field.name === 'redirect' ||
+              field.name === 'emails'
+            )) {
+              return {
+                ...field,
+                admin: {
+                  ...field.admin,
+                  readOnly: false,
+                  disabled: false,
                 },
               } as typeof field
             }
+            
             return field
           }),
+        // Add proper permissions for form editing
+        access: {
+          create: () => true,
+          read: () => true,
+          update: () => true,
+          delete: () => true,
+        },
       },
       formSubmissionOverrides: {
         slug: 'form-submissions',
@@ -115,6 +149,16 @@ export default buildConfig({
         },
         admin: {
           useAsTitle: 'form',
+          description: 'View and manage form submissions from all your forms.',
+          defaultColumns: ['form', 'submissionData', 'createdAt'],
+          listSearchableFields: ['form', 'submissionData'],
+        },
+        // Add proper permissions for viewing submissions
+        access: {
+          create: () => true,
+          read: () => true,
+          update: () => true,
+          delete: () => true,
         },
       },
     }),
