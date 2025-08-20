@@ -78,7 +78,12 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
         const fieldValue = formData[fieldName]
 
         if (field.required) {
-          if (!fieldValue || (typeof fieldValue === 'string' && !fieldValue.trim())) {
+          // Handle different field types for required validation
+          if (field.blockType === 'checkbox') {
+            if (!fieldValue) {
+              newErrors[fieldName] = `${field.label || fieldName} must be checked`
+            }
+          } else if (!fieldValue || (typeof fieldValue === 'string' && !fieldValue.trim())) {
             newErrors[fieldName] = `${field.label || fieldName} is required`
           }
         }
@@ -86,6 +91,11 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
         // Email validation
         if (field.blockType === 'email' && fieldValue && !validateEmail(fieldValue)) {
           newErrors[fieldName] = 'Please enter a valid email address'
+        }
+
+        // Number validation
+        if (field.blockType === 'number' && fieldValue && isNaN(Number(fieldValue))) {
+          newErrors[fieldName] = 'Please enter a valid number'
         }
       })
     } else {
@@ -140,7 +150,14 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
         // Handle redirect if specified in form
         if (formObject?.redirect) {
           setTimeout(() => {
-            window.location.href = formObject.redirect as unknown as string
+            // Handle both string URLs and Payload CMS redirect objects
+            const redirectUrl = typeof formObject.redirect === 'string' 
+              ? formObject.redirect 
+              : formObject.redirect?.url || null
+              
+            if (redirectUrl) {
+              window.location.href = redirectUrl
+            }
           }, 2000)
         }
       } else {
@@ -259,6 +276,51 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
               </div>
             )
 
+          case 'number':
+            return (
+              <div key={index}>
+                <input
+                  id={fieldId}
+                  type="number"
+                  name={fieldName}
+                  value={formData[fieldName] || ''}
+                  onChange={handleChange}
+                  placeholder={`${field.label}${field.required ? '*' : ''}`}
+                  className={`w-full p-3 border rounded-lg ${
+                    errors[fieldName] ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  required={field.required}
+                />
+                {errors[fieldName] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>
+                )}
+              </div>
+            )
+
+          case 'checkbox':
+            return (
+              <div key={index} className="flex items-start space-x-3">
+                <input
+                  id={fieldId}
+                  type="checkbox"
+                  name={fieldName}
+                  checked={formData[fieldName] || false}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, [fieldName]: e.target.checked }))
+                  }
+                  className="mt-1 h-4 w-4 text-Teal focus:ring-Teal border-gray-300 rounded"
+                  required={field.required}
+                />
+                <label htmlFor={fieldId} className="text-sm text-gray-700">
+                  {field.label}
+                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+                {errors[fieldName] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[fieldName]}</p>
+                )}
+              </div>
+            )
+
           default:
             return null
         }
@@ -371,7 +433,12 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
             <h3 className="text-2xl font-semibold text-green-800 mb-2">Thank you!</h3>
             <p className="text-green-700">
               {formObject?.confirmationMessage ? (
-                <div dangerouslySetInnerHTML={{ __html: formObject.confirmationMessage }} />
+                // Handle Payload CMS rich text format properly
+                typeof formObject.confirmationMessage === 'string' ? (
+                  formObject.confirmationMessage
+                ) : (
+                  "Your demo has been booked successfully. We'll reach out to you soon!"
+                )
               ) : (
                 "Your demo has been booked successfully. We'll reach out to you soon!"
               )}
