@@ -117,7 +117,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
 
   return (
     <div className={className}>
-      {form.title && <h2 className="text-2xl font-bold mb-6 text-gray-900">{form.title}</h2>}
+      {/* {form.title && <h2 className="text-2xl font-bold mb-6 text-gray-900">{form.title}</h2>} */}
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -159,7 +159,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       required={fieldData.required}
                       value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-sm"
                       placeholder={fieldData.label || ''}
                     />
                   </div>
@@ -182,7 +182,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-smtransition-colors resize-vertical"
                       placeholder={fieldData.label || ''}
                     />
                   </div>
@@ -319,7 +319,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-Teal text-white py-3 px-6 rounded-sm font-medium hover:bg-DarkTeal focus:ring-4 focus:ring-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Submitting...' : form.submitButtonLabel || 'Submit'}
         </button>

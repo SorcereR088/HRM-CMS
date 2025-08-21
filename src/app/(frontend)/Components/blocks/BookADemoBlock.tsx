@@ -94,7 +94,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
     return parts.map((part, index) => {
       if (part === 'YAK' || part === 'HRM') {
         return (
-          <span key={index} className="text-green-600 text-3xl sm:text-4xl lg:text-5xl font-bold">
+          <span key={index} className="text-Teal text-3xl sm:text-4xl lg:text-5xl font-bold">
             {part}
           </span>
         )
@@ -105,11 +105,11 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
 
   return (
     <section className={`py-16 lg:py-20 ${bgColorClass}`}>
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-[140px] grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="max-w-8xl mx-auto px-12 sm:px-8 lg:px-[140px] grid grid-cols-1 lg:grid-cols-2 gap-64">
         {/* Left Column - Features */}
-        <div>
+        <div className="">
           {heading && (
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-20">
               {renderStyledHeading(heading)}
             </h2>
           )}
@@ -123,7 +123,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
 
         {/* Right Column - Form */}
         <div>
-          <div className="bg-white p-8 rounded-md">
+          <div className="bg-white p-8 rounded-sm">
             {formHeading && (
               <h3 className="text-xl font-semibold text-gray-900 mb-6">{formHeading}</h3>
             )}
