@@ -92,9 +92,11 @@ export interface Config {
   };
   globals: {
     navbar: Navbar;
+    footer: Footer;
   };
   globalsSelect: {
     navbar: NavbarSelect<false> | NavbarSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
   };
   locale: null;
   user: User & {
@@ -386,46 +388,6 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'form-block';
-      }
-    | {
-        /**
-         * Main call-to-action heading
-         */
-        mainHeading: string;
-        ctaButton: {
-          text: string;
-          /**
-           * Link destination for the button
-           */
-          url?: string | null;
-        };
-        socialLinks?: {
-          heading?: string | null;
-          links?:
-            | {
-                /**
-                 * e.g., LinkedIn, Instagram, Facebook
-                 */
-                platform: string;
-                url: string;
-                id?: string | null;
-              }[]
-            | null;
-        };
-        contactInfo?: {
-          heading?: string | null;
-          email?: string | null;
-          phone?: string | null;
-          address?: string | null;
-        };
-        footerBottom?: {
-          copyrightText?: string | null;
-          designCredit?: string | null;
-        };
-        backgroundColor?: ('teal-gradient' | 'dark-green' | 'custom-teal') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'footer';
       }
   )[];
   status?: ('draft' | 'published') | null;
@@ -922,46 +884,6 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        footer?:
-          | T
-          | {
-              mainHeading?: T;
-              ctaButton?:
-                | T
-                | {
-                    text?: T;
-                    url?: T;
-                  };
-              socialLinks?:
-                | T
-                | {
-                    heading?: T;
-                    links?:
-                      | T
-                      | {
-                          platform?: T;
-                          url?: T;
-                          id?: T;
-                        };
-                  };
-              contactInfo?:
-                | T
-                | {
-                    heading?: T;
-                    email?: T;
-                    phone?: T;
-                    address?: T;
-                  };
-              footerBottom?:
-                | T
-                | {
-                    copyrightText?: T;
-                    designCredit?: T;
-                  };
-              backgroundColor?: T;
-              id?: T;
-              blockName?: T;
-            };
       };
   status?: T;
   updatedAt?: T;
@@ -1179,6 +1101,41 @@ export interface Navbar {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  mainHeading?: string | null;
+  ctaButton?: {
+    text?: string | null;
+    url?: string | null;
+  };
+  socialLinks?: {
+    heading?: string | null;
+    links?:
+      | {
+          platform: string;
+          url: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  contactInfo?: {
+    heading?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+  };
+  footerBottom?: {
+    copyrightText?: string | null;
+    designCredit?: string | null;
+  };
+  backgroundColor?: ('teal-gradient' | 'dark-green' | 'custom-teal') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "navbar_select".
  */
 export interface NavbarSelect<T extends boolean = true> {
@@ -1192,6 +1149,49 @@ export interface NavbarSelect<T extends boolean = true> {
       };
   ctaLabel?: T;
   ctaUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  mainHeading?: T;
+  ctaButton?:
+    | T
+    | {
+        text?: T;
+        url?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        heading?: T;
+        links?:
+          | T
+          | {
+              platform?: T;
+              url?: T;
+              id?: T;
+            };
+      };
+  contactInfo?:
+    | T
+    | {
+        heading?: T;
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  footerBottom?:
+    | T
+    | {
+        copyrightText?: T;
+        designCredit?: T;
+      };
+  backgroundColor?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

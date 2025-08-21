@@ -6,7 +6,7 @@ import TrustedBy from '../blocks/TrustedBy'
 import FeaturesBlock from '../blocks/Features'
 import Highlight from '../blocks/Highlight'
 import Testimonial from '../blocks/Testimonials'
-import Footer from '../blocks/Footer'
+// import Footer from '../blocks/Footer'
 import CrossPlatform from '../blocks/Crossplatform'
 import Form from '../blocks/Form'
 import BookADemo from '../blocks/BookADemo'
@@ -79,7 +79,6 @@ const Pages: CollectionConfig = {
         description: 'Drag and drop to reorder sections',
       },
       blocks: [
-        // Navbar removed - now available as a global
         Hero,
         TrustedBy,
         FeaturesBlock,
@@ -88,7 +87,6 @@ const Pages: CollectionConfig = {
         Testimonial,
         BookADemo,
         Form,
-        Footer,
       ],
     },
     {

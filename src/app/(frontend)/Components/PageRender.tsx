@@ -2,16 +2,14 @@
 
 import React from 'react'
 import { Page } from '@/payload-types'
-import NavbarBlock from './global/NavbarBlock'
 import HeroBlock from '../Components/blocks/HeroBlock'
 import TrustedByBlock from '../Components/blocks/TrustedByBlock'
 import FeaturesBlock from '../Components/blocks/FeaturesBlock'
 import HighlightBlock from '../Components/blocks/HighlightBlock'
 import TestimonialsBlock from '../Components/blocks/TestimonialsBlock'
-import FooterBlock from '../Components/blocks/FooterBlock'
 import CrossPlatform from '../Components/blocks/CrossPlatform'
 import FormBlock from '../Components/blocks/FormBlock'
-import BookADemoBlock from '../Components/blocks/BookADemoBlock' // Add this import
+import BookADemoBlock from '../Components/blocks/BookADemoBlock'
 
 interface PageRendererProps {
   page: Page
@@ -37,8 +35,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
               return <HighlightBlock key={`${block.blockType}-${index}`} {...block} />
             case 'testimonials':
               return <TestimonialsBlock key={`${block.blockType}-${index}`} {...block} />
-            case 'footer':
-              return <FooterBlock key={`${block.blockType}-${index}`} {...block} />
+            // case 'footer':
+            //   return <FooterBlock key={`${block.blockType}-${index}`} {...block} />
             case 'platform':
               return <CrossPlatform key={`${block.blockType}-${index}`} {...block} />
             case 'form-block':

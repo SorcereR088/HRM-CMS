@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Icon } from '@iconify/react'
+import { Footer } from '@/payload-types'
 
 interface SocialLink {
   platform: string
@@ -31,6 +32,7 @@ interface FooterBottom {
   designCredit?: string | null
 }
 
+// Original block props
 interface FooterBlockProps {
   mainHeading?: string | null
   ctaButton?: CTAButton | null
@@ -44,14 +46,32 @@ interface FooterBlockProps {
   [key: string]: any
 }
 
-const FooterBlock: React.FC<FooterBlockProps> = ({
-  mainHeading = 'Experience YAK HRM in action',
-  ctaButton,
-  socialLinks,
-  contactInfo,
-  footerBottom,
-  backgroundColor = 'teal-gradient',
-}) => {
+// Global props
+interface FooterGlobalProps {
+  data: Footer
+}
+
+// Combined props type
+type FooterProps = FooterBlockProps | FooterGlobalProps
+
+// Type guard to check if it's global data
+function isGlobalData(props: FooterProps): props is FooterGlobalProps {
+  return 'data' in props
+}
+
+const FooterBlock: React.FC<FooterProps> = (props) => {
+  // Extract data based on whether it's global or block data
+  const footerData = isGlobalData(props) ? props.data : props
+
+  const {
+    mainHeading = 'Experience YAK HRM in action',
+    ctaButton,
+    socialLinks,
+    contactInfo,
+    footerBottom,
+    backgroundColor = 'teal-gradient',
+  } = footerData
+
   const bgColorClass = {
     'teal-gradient': 'bg-gradient-to-r from-Teal to-[#002D20]',
     'dark-green': 'bg-emerald-700',
@@ -158,7 +178,10 @@ const FooterBlock: React.FC<FooterBlockProps> = ({
 
       {/* Footer bottom */}
       <div className="border-t border-white/20 pt-6 text-sm text-white/50 flex flex-col sm:flex-row justify-between gap-2 px-6 sm:px-10 lg:px-40 py-8">
-        {footerBottom?.copyrightText && <p>{footerBottom.copyrightText}</p>}
+        <p className="flex items-center gap-1">
+          <Icon icon="mdi:copyright" className="w-4 h-4" />
+          {` ${new Date().getFullYear()} ${footerBottom?.copyrightText}`}
+        </p>
         {footerBottom?.designCredit && <p>{footerBottom.designCredit}</p>}
       </div>
     </footer>

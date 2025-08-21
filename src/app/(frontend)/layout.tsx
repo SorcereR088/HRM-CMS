@@ -2,7 +2,9 @@ import './styles.css'
 import React from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import NavbarComponent from '@/app/(frontend)/Components/global/NavbarBlock' // Your navbar component
+import Navbar from '@/app/(frontend)/Components/global/NavbarBlock'
+import FooterBlock from '@/app/(frontend)/Components/global/FooterBlock'
+import type { Footer } from '@/payload-types'
 
 async function getNavbar() {
   const payload = await getPayload({ config })
@@ -19,21 +21,20 @@ async function getNavbar() {
   }
 }
 
-// async function getFooter() {
-//   // If you also want to make footer global later
-//   const payload = await getPayload({ config })
+async function getFooter(): Promise<Footer | null> {
+  const payload = await getPayload({ config })
 
-//   try {
-//     const footer = await payload.findGlobal({
-//       slug: 'footer',
-//       depth: 2,
-//     })
-//     return footer
-//   } catch (error) {
-//     console.error('Error fetching footer:', error)
-//     return null
-//   }
-// }
+  try {
+    const footer = (await payload.findGlobal({
+      slug: 'footer',
+      depth: 2,
+    })) as Footer
+    return footer
+  } catch (error) {
+    console.error('Error fetching footer:', error)
+    return null
+  }
+}
 
 export const metadata = {
   title: 'YAK HRM',
@@ -41,18 +42,18 @@ export const metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const navbar = await getNavbar()
-  // const footer = await getFooter() // If you want footer global too
+  const footer = await getFooter()
 
   return (
     <html lang="en">
       <body>
         {/* Navbar appears on all pages */}
-        {navbar && <NavbarComponent data={navbar} />}
+        {navbar && <Navbar data={navbar} />}
 
         <main>{children}</main>
 
-        {/* Footer would go here if global */}
-        {/* {footer && <FooterComponent data={footer} />} */}
+        {/* Footer appears on all pages */}
+        {footer && <FooterBlock data={footer} />}
       </body>
     </html>
   )
