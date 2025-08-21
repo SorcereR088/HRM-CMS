@@ -1,15 +1,14 @@
 import { CollectionConfig } from 'payload'
 
-// Remove Navbar import since it's now a global
 import Hero from '../blocks/Hero'
 import TrustedBy from '../blocks/TrustedBy'
 import FeaturesBlock from '../blocks/Features'
 import Highlight from '../blocks/Highlight'
 import Testimonial from '../blocks/Testimonials'
-// import Footer from '../blocks/Footer'
 import CrossPlatform from '../blocks/Crossplatform'
 import Form from '../blocks/Form'
 import BookADemo from '../blocks/BookADemo'
+import AboutUs from '@/blocks/AboutUs'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -87,6 +86,7 @@ const Pages: CollectionConfig = {
         Testimonial,
         BookADemo,
         Form,
+        AboutUs,
       ],
     },
     {

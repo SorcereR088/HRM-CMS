@@ -52,8 +52,8 @@ export default buildConfig({
   },
 
   collections: [Users, Media, Pages],
-  // Add globals array here
   globals: [Navbar, Footer],
+
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

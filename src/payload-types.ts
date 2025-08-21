@@ -389,6 +389,32 @@ export interface Page {
         blockName?: string | null;
         blockType: 'form-block';
       }
+    | {
+        companyName: string;
+        tagline: string;
+        description: string;
+        ctaButton?: {
+          text?: string | null;
+          url?: string | null;
+        };
+        stats?:
+          | {
+              /**
+               * e.g., 1000+, 50+, 10
+               */
+              value: string;
+              /**
+               * e.g., active users, projects completed, years in business
+               */
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+        backgroundColor?: ('light-blue' | 'white' | 'gray') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'companyInfo';
+      }
   )[];
   status?: ('draft' | 'published') | null;
   updatedAt: string;
@@ -881,6 +907,29 @@ export interface PagesSelect<T extends boolean = true> {
           | {
               form?: T;
               enableAjax?: T;
+              id?: T;
+              blockName?: T;
+            };
+        companyInfo?:
+          | T
+          | {
+              companyName?: T;
+              tagline?: T;
+              description?: T;
+              ctaButton?:
+                | T
+                | {
+                    text?: T;
+                    url?: T;
+                  };
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              backgroundColor?: T;
               id?: T;
               blockName?: T;
             };

@@ -10,6 +10,7 @@ import TestimonialsBlock from '../Components/blocks/TestimonialsBlock'
 import CrossPlatform from '../Components/blocks/CrossPlatform'
 import FormBlock from '../Components/blocks/FormBlock'
 import BookADemoBlock from '../Components/blocks/BookADemoBlock'
+import AboutUsBlock from '../Components/blocks/AboutUsBlock'
 
 interface PageRendererProps {
   page: Page
@@ -23,8 +24,6 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
       {page.content.map((block, index) => {
         try {
           switch (block.blockType) {
-            // case 'navbar':
-            //   return <NavbarBlock key={`${block.blockType}-${index}`} {...block} />
             case 'hero':
               return <HeroBlock key={`${block.blockType}-${index}`} {...block} />
             case 'trusted-by':
@@ -35,14 +34,14 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
               return <HighlightBlock key={`${block.blockType}-${index}`} {...block} />
             case 'testimonials':
               return <TestimonialsBlock key={`${block.blockType}-${index}`} {...block} />
-            // case 'footer':
-            //   return <FooterBlock key={`${block.blockType}-${index}`} {...block} />
             case 'platform':
               return <CrossPlatform key={`${block.blockType}-${index}`} {...block} />
             case 'form-block':
               return <FormBlock key={`${block.blockType}-${index}`} {...block} />
-            case 'book-demo': // Add this case
+            case 'book-demo':
               return <BookADemoBlock key={`${block.blockType}-${index}`} {...block} />
+            case 'companyInfo':
+              return <AboutUsBlock key={`${block.blockType}-${index}`} {...block} />
             default:
               console.warn(`Unknown block type: ${(block as any).blockType}`)
               return null
