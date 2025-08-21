@@ -1,6 +1,6 @@
 import { CollectionConfig } from 'payload'
 
-import Navbar from '../blocks/Navbar'
+// Remove Navbar import since it's now a global
 import Hero from '../blocks/Hero'
 import TrustedBy from '../blocks/TrustedBy'
 import FeaturesBlock from '../blocks/Features'
@@ -79,7 +79,7 @@ const Pages: CollectionConfig = {
         description: 'Drag and drop to reorder sections',
       },
       blocks: [
-        Navbar,
+        // Navbar removed - now available as a global
         Hero,
         TrustedBy,
         FeaturesBlock,

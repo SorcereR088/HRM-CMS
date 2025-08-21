@@ -90,8 +90,12 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    navbar: Navbar;
+  };
+  globalsSelect: {
+    navbar: NavbarSelect<false> | NavbarSelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -203,21 +207,6 @@ export interface Page {
    * Drag and drop to reorder sections
    */
   content: (
-    | {
-        logo: number | Media;
-        links?:
-          | {
-              label: string;
-              url: string;
-              id?: string | null;
-            }[]
-          | null;
-        ctaLabel: string;
-        ctaUrl: string;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'navbar';
-      }
     | {
         title: string;
         subtitle?: string | null;
@@ -795,22 +784,6 @@ export interface PagesSelect<T extends boolean = true> {
   content?:
     | T
     | {
-        navbar?:
-          | T
-          | {
-              logo?: T;
-              links?:
-                | T
-                | {
-                    label?: T;
-                    url?: T;
-                    id?: T;
-                  };
-              ctaLabel?: T;
-              ctaUrl?: T;
-              id?: T;
-              blockName?: T;
-            };
         hero?:
           | T
           | {
@@ -1184,6 +1157,44 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navbar".
+ */
+export interface Navbar {
+  id: number;
+  logo: number | Media;
+  links?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  ctaLabel: string;
+  ctaUrl: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navbar_select".
+ */
+export interface NavbarSelect<T extends boolean = true> {
+  logo?: T;
+  links?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  ctaLabel?: T;
+  ctaUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

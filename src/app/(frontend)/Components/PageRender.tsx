@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Page } from '@/payload-types'
-import NavbarBlock from '../Components/blocks/NavbarBlock'
+import NavbarBlock from './global/NavbarBlock'
 import HeroBlock from '../Components/blocks/HeroBlock'
 import TrustedByBlock from '../Components/blocks/TrustedByBlock'
 import FeaturesBlock from '../Components/blocks/FeaturesBlock'
@@ -25,8 +25,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
       {page.content.map((block, index) => {
         try {
           switch (block.blockType) {
-            case 'navbar':
-              return <NavbarBlock key={`${block.blockType}-${index}`} {...block} />
+            // case 'navbar':
+            //   return <NavbarBlock key={`${block.blockType}-${index}`} {...block} />
             case 'hero':
               return <HeroBlock key={`${block.blockType}-${index}`} {...block} />
             case 'trusted-by':

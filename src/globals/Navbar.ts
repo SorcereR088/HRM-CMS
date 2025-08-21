@@ -1,11 +1,8 @@
-import { Block } from 'payload'
+import { GlobalConfig } from 'payload'
 
-const NavbarBlock: Block = {
+const Navbar: GlobalConfig = {
   slug: 'navbar',
-  labels: {
-    singular: 'Navbar',
-    plural: 'Navbars',
-  },
+  label: 'Navbar',
   fields: [
     {
       name: 'logo',
@@ -46,4 +43,4 @@ const NavbarBlock: Block = {
   ],
 }
 
-export default NavbarBlock
+export default Navbar

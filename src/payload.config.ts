@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import Pages from './collections/Pages'
+// Import your navbar global
+import Navbar from './globals/Navbar'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -50,6 +52,8 @@ export default buildConfig({
   },
 
   collections: [Users, Media, Pages],
+  // Add globals array here
+  globals: [Navbar],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
-import { Media } from '@/payload-types'
+import { Media, Navbar } from '@/payload-types'
 import Button from '../Button'
 
+// Original block props
 interface NavbarBlockProps {
   logo: number | Media
   links?: Array<{
@@ -21,9 +22,26 @@ interface NavbarBlockProps {
   blockName?: string | null
 }
 
-const NavbarBlock: React.FC<NavbarBlockProps> = ({ logo, links, ctaLabel, ctaUrl }) => {
+// Global props
+interface NavbarGlobalProps {
+  data: Navbar
+}
+
+// Combined props type
+type NavbarProps = NavbarBlockProps | NavbarGlobalProps
+
+// Type guard to check if it's global data
+function isGlobalData(props: NavbarProps): props is NavbarGlobalProps {
+  return 'data' in props
+}
+
+const NavbarBlock: React.FC<NavbarProps> = (props) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+
+  // Extract data based on whether it's global or block data
+  const navbarData = isGlobalData(props) ? props.data : props
+  const { logo, links, ctaLabel, ctaUrl } = navbarData
 
   // Check if logo is a populated Media object
   const isLogoPopulated = typeof logo === 'object' && logo !== null && 'url' in logo
