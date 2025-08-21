@@ -631,6 +631,22 @@ export interface FormSubmission {
         id?: string | null;
       }[]
     | null;
+  /**
+   * All fields submitted with this form
+   */
+  dynamicFields?:
+    | {
+        fieldName?: string | null;
+        fieldLabel?: string | null;
+        fieldValue?: string | null;
+        fieldType?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Human-readable summary of all submitted data
+   */
+  submissionSummary?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1124,6 +1140,16 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
         value?: T;
         id?: T;
       };
+  dynamicFields?:
+    | T
+    | {
+        fieldName?: T;
+        fieldLabel?: T;
+        fieldValue?: T;
+        fieldType?: T;
+        id?: T;
+      };
+  submissionSummary?: T;
   updatedAt?: T;
   createdAt?: T;
 }

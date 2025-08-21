@@ -40,19 +40,28 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
     setError(null)
 
     try {
-      // Updated to use the new submit-form endpoint
+      // Extract the form ID - handle both string ID and form object
+      const formId = typeof form === 'object' ? form.id : form
+
+      console.log('Submitting form with ID:', formId)
+      console.log('Form data being submitted:', formData)
+
       const response = await fetch('/api/submit-form', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          form: form.id,
+          form: formId, // Send just the ID
           submissionData: formData,
         }),
       })
 
+      console.log('Submission response status:', response.status)
+
       if (response.ok) {
+        const responseData = await response.json()
+        console.log('Submission successful:', responseData)
         setIsSubmitted(true)
         setFormData({})
 
@@ -62,11 +71,12 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
         }
       } else {
         const errorData = await response.json()
+        console.error('Submission failed:', errorData)
         setError(errorData.message || 'Failed to submit form')
       }
     } catch (err) {
+      console.error('Network error during form submission:', err)
       setError('Network error. Please try again.')
-      console.error('Form submission error:', err)
     } finally {
       setIsSubmitting(false)
     }
@@ -255,7 +265,6 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                 )
 
               case 'country':
-                // You might want to implement a country selector here
                 return (
                   <div key={index}>
                     <label
@@ -279,7 +288,6 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                 )
 
               case 'state':
-                // You might want to implement a state selector here
                 return (
                   <div key={index}>
                     <label

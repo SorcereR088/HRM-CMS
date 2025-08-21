@@ -99,8 +99,8 @@ export default buildConfig({
           update: () => true,
           delete: () => true,
         },
-        fields: ({ defaultFields }) => [
-          ...defaultFields.map((field) => {
+        fields: ({ defaultFields }) =>
+          defaultFields.map((field) => {
             if ('name' in field && field.name === 'fields') {
               return {
                 ...field,
@@ -113,7 +113,6 @@ export default buildConfig({
             }
             return field
           }),
-        ],
       },
       formSubmissionOverrides: {
         slug: 'form-submissions',
@@ -123,7 +122,8 @@ export default buildConfig({
         },
         admin: {
           useAsTitle: 'form',
-          defaultColumns: ['form', 'createdAt'],
+          defaultColumns: ['form', 'dynamicFields', 'createdAt'],
+          listSearchableFields: ['dynamicFields'],
         },
         access: {
           read: () => true,
@@ -131,8 +131,53 @@ export default buildConfig({
           update: () => true,
           delete: () => true,
         },
-        // Remove the fields override completely since submissionData already exists
-        // The form builder plugin already creates this field
+        fields: ({ defaultFields }) => [
+          ...defaultFields,
+          {
+            name: 'dynamicFields',
+            type: 'array',
+            label: 'Submitted Fields',
+            admin: {
+              readOnly: true,
+              description: 'All fields submitted with this form',
+            },
+            fields: [
+              {
+                name: 'fieldName',
+                type: 'text',
+                label: 'Field Name',
+                admin: { readOnly: true },
+              },
+              {
+                name: 'fieldLabel',
+                type: 'text',
+                label: 'Field Label',
+                admin: { readOnly: true },
+              },
+              {
+                name: 'fieldValue',
+                type: 'textarea',
+                label: 'Field Value',
+                admin: { readOnly: true },
+              },
+              {
+                name: 'fieldType',
+                type: 'text',
+                label: 'Field Type',
+                admin: { readOnly: true },
+              },
+            ],
+          },
+          {
+            name: 'submissionSummary',
+            type: 'textarea',
+            label: 'Quick Summary',
+            admin: {
+              readOnly: true,
+              description: 'Human-readable summary of all submitted data',
+            },
+          },
+        ],
       },
     }),
   ],
