@@ -12,7 +12,25 @@ export const AboutUs: Block = {
       type: 'text',
       label: 'Company Name',
       defaultValue: 'CODE BRIGHT',
-      required: true,
+      required: false,
+    },
+    {
+      name: 'logo',
+      label: 'Company Logo',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+    },
+    {
+      name: 'illustration',
+      label: 'Side Illustration',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+      admin: {
+        description:
+          'Upload an image, SVG, or GIF for the right side illustration. Recommended size: 400x400px or larger.',
+      },
     },
     {
       name: 'tagline',

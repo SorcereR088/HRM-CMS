@@ -390,7 +390,12 @@ export interface Page {
         blockType: 'form-block';
       }
     | {
-        companyName: string;
+        companyName?: string | null;
+        logo?: (number | null) | Media;
+        /**
+         * Upload an image, SVG, or GIF for the right side illustration. Recommended size: 400x400px or larger.
+         */
+        illustration?: (number | null) | Media;
         tagline: string;
         description: string;
         ctaButton?: {
@@ -914,6 +919,8 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               companyName?: T;
+              logo?: T;
+              illustration?: T;
               tagline?: T;
               description?: T;
               ctaButton?:

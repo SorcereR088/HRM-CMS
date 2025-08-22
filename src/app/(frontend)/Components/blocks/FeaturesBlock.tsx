@@ -30,6 +30,7 @@ const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
   subheading,
   features,
   backgroundColor = 'gray-50',
+  id,
 }) => {
   const bgColor = backgroundColor || 'gray-50'
 
@@ -40,7 +41,10 @@ const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
   }[bgColor]
 
   return (
-    <section className={`py-24 px-40 md:px-40 ${bgColorClass}`}>
+    <section
+      id="features" // Add id for smooth scrolling
+      className={`py-24 px-40 md:px-40 ${bgColorClass}`}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left Side - Heading and Subheading */}

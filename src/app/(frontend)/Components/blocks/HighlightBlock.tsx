@@ -53,7 +53,7 @@ const HighlightsBlock: React.FC<HighlightsBlockProps> = ({
           {highlights.map((highlight, index) => (
             <div
               key={highlight.id || index}
-              className="group bg-white p-8 rounded-lg shadow-sm border border-transparent hover:border-Teal hover:bg-teal-50 transition-colors duration-300"
+              className="group bg-white p-8 rounded-lg shadow-sm border"
             >
               {/* Icon - Clean Green Circle */}
               <div className="mb-10">
