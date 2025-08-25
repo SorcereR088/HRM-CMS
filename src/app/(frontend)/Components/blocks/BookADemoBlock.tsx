@@ -109,7 +109,7 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
         {/* Left Column - Features */}
         <div className="">
           {heading && (
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-20">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-20 leading-tight max-w-2xl">
               {renderStyledHeading(heading)}
             </h2>
           )}

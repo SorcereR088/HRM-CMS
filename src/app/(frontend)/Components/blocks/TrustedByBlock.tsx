@@ -1,6 +1,9 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
 import { Media } from '@/payload-types'
+import { motion } from 'framer-motion'
 
 interface TrustedByBlockProps {
   preText: string
@@ -23,6 +26,12 @@ const TrustedByBlock: React.FC<TrustedByBlockProps> = ({
   subtitle,
   logos,
 }) => {
+  // Filter valid logos
+  const validLogos = logos.filter(
+    (logoItem) =>
+      typeof logoItem.logo === 'object' && logoItem.logo !== null && 'url' in logoItem.logo,
+  ) as { logo: Media; id?: string | null }[]
+
   return (
     <section className="px-4 py-24 text-center bg-white w-full items-center">
       <h2 className="text-2xl sm:text-3xl md:text-[40px] font-medium max-w-[700px] mx-auto">
@@ -35,46 +44,45 @@ const TrustedByBlock: React.FC<TrustedByBlockProps> = ({
 
       {subtitle && <p className="text-gray-500 mt-2">{subtitle}</p>}
 
-      {/* Logos */}
-      {logos && logos.length > 0 && (
-        <div className="mt-10 flex flex-wrap justify-center items-center gap-12">
-          {logos.map((logoItem, index) => {
-            // Check if logo is a populated Media object
-            const isLogoPopulated =
-              typeof logoItem.logo === 'object' && logoItem.logo !== null && 'url' in logoItem.logo
-
-            if (!isLogoPopulated) {
-              return null // Skip unpopulated logos
-            }
-
-            const logo = logoItem.logo
-
-            return (
+      {/* Desktop / Larger Screens: Static Grid */}
+      {validLogos.length > 0 && (
+        <>
+          <div className="hidden md:flex mt-10 flex-wrap justify-center items-center gap-12">
+            {validLogos.map((logoItem, index) => (
               <Image
                 key={logoItem.id || index}
-                src={
-                  typeof logo === 'object' && 'url' in logo && logo.url
-                    ? logo.url
-                    : '/placeholder.png'
-                }
-                alt={
-                  typeof logo === 'object' && 'alt' in logo && logo.alt
-                    ? logo.alt
-                    : `Logo ${index + 1}`
-                }
+                src={logoItem.logo.url || '/placeholder.png'}
+                alt={logoItem.logo.alt || `Logo ${index + 1}`}
                 width={200}
                 height={80}
                 className="h-14 sm:h-16 md:h-20 object-contain"
               />
-            )
-          })}
-        </div>
+            ))}
+          </div>
+          {/* Mobile / Tablet: Infinite Scrolling Logos */}
+          <div className="md:hidden mt-10 overflow-hidden relative w-full">
+            <motion.div
+              className="flex gap-12"
+              animate={{ x: ['0%', '-100%'] }}
+              transition={{ repeat: Infinity, duration: 15, ease: 'linear' }}
+            >
+              {[...validLogos, ...validLogos].map((logoItem, index) => (
+                <Image
+                  key={`${logoItem.id || 'logo'}-${index}`} // ✅ now unique
+                  src={logoItem.logo.url || '/placeholder.png'}
+                  alt={logoItem.logo.alt || `Logo ${index + 1}`}
+                  width={150}
+                  height={60}
+                  className="h-12 sm:h-14 object-contain"
+                />
+              ))}
+            </motion.div>
+          </div>
+        </>
       )}
 
       {/* Show message if no logos are available */}
-      {(!logos ||
-        logos.length === 0 ||
-        !logos.some((item) => typeof item.logo === 'object' && item.logo !== null)) && (
+      {validLogos.length === 0 && (
         <div className="text-center py-8">
           <p className="text-gray-500">
             No company logos to display. Add logos through the admin panel.

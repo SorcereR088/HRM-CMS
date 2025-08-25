@@ -40,11 +40,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
     setError(null)
 
     try {
-      // Extract the form ID - handle both string ID and form object
       const formId = typeof form === 'object' ? form.id : form
-
-      console.log('Submitting form with ID:', formId)
-      console.log('Form data being submitted:', formData)
 
       const response = await fetch('/api/submit-form', {
         method: 'POST',
@@ -52,57 +48,58 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          form: formId, // Send just the ID
+          form: formId,
           submissionData: formData,
         }),
       })
-
-      console.log('Submission response status:', response.status)
 
       if (response.ok) {
         const responseData = await response.json()
         console.log('Submission successful:', responseData)
         setIsSubmitted(true)
+
+        // (Optional) clear form fields
         setFormData({})
 
-        // Handle redirect if specified and exists on form
+        // Handle redirect if specified
         if (form.redirect?.url && typeof form.redirect.url === 'string') {
           window.location.href = form.redirect.url
         }
       } else {
         const errorData = await response.json()
-        console.error('Submission failed:', errorData)
         setError(errorData.message || 'Failed to submit form')
       }
     } catch (err) {
-      console.error('Network error during form submission:', err)
+      console.error('Network error:', err)
       setError('Network error. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  // Check if form has redirect property safely
-  const hasRedirect = form.redirect?.url && typeof form.redirect.url === 'string'
-
-  if (isSubmitted && !hasRedirect) {
-    return (
-      <div className={`bg-green-50 border border-green-200 rounded-lg p-6 ${className}`}>
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-green-800">Form submitted successfully!</h3>
+  return (
+    <div className={className}>
+      {/* Success message (keeps form visible) */}
+      {isSubmitted && (
+        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-start transition-opacity duration-300 ease-in">
+          <svg
+            className="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 
+                 7.707 9.293a1 1 0 00-1.414 1.414l2 
+                 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <div>
+            <p className="text-sm font-medium text-green-800">Form submitted successfully!</p>
             {form.confirmationMessage && (
               <div
-                className="mt-2 text-sm text-green-700"
+                className="mt-1 text-sm text-green-700"
                 dangerouslySetInnerHTML={{
                   __html:
                     typeof form.confirmationMessage === 'string' ? form.confirmationMessage : '',
@@ -111,20 +108,16 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
             )}
           </div>
         </div>
-      </div>
-    )
-  }
+      )}
 
-  return (
-    <div className={className}>
-      {/* {form.title && <h2 className="text-2xl font-bold mb-6 text-gray-900">{form.title}</h2>} */}
-
+      {/* Error message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
           <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 
+      {/* The Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {form.fields &&
           Array.isArray(form.fields) &&
@@ -157,6 +150,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       }
                       name={fieldName}
                       required={fieldData.required}
+                      disabled={isSubmitted} // disable after success
                       value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-sm"
@@ -179,10 +173,11 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       id={fieldId}
                       name={fieldName}
                       required={fieldData.required}
+                      disabled={isSubmitted}
                       value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-smtransition-colors resize-vertical"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-sm transition-colors resize-vertical"
                       placeholder={fieldData.label || ''}
                     />
                   </div>
@@ -202,18 +197,17 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       id={fieldId}
                       name={fieldName}
                       required={fieldData.required}
+                      disabled={isSubmitted}
                       value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-sm transition-colors"
                     >
                       <option value="">Select an option</option>
-                      {fieldData.options &&
-                        Array.isArray(fieldData.options) &&
-                        fieldData.options.map((option, idx) => (
-                          <option key={idx} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
+                      {fieldData.options?.map((option, idx) => (
+                        <option key={idx} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 )
@@ -226,6 +220,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                       type="checkbox"
                       name={fieldName}
                       required={fieldData.required}
+                      disabled={isSubmitted}
                       checked={
                         formData[fieldName] !== undefined
                           ? formData[fieldName]
@@ -242,51 +237,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                 )
 
               case 'phone':
-                return (
-                  <div key={index}>
-                    <label
-                      htmlFor={fieldId}
-                      className="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                      {fieldData.label}
-                      {fieldData.required && <span className="text-red-500 ml-1">*</span>}
-                    </label>
-                    <input
-                      id={fieldId}
-                      type="tel"
-                      name={fieldName}
-                      required={fieldData.required}
-                      value={formData[fieldName] || fieldData.defaultValue || ''}
-                      onChange={(e) => handleInputChange(fieldName, e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                      placeholder={fieldData.label || ''}
-                    />
-                  </div>
-                )
-
               case 'country':
-                return (
-                  <div key={index}>
-                    <label
-                      htmlFor={fieldId}
-                      className="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                      {fieldData.label}
-                      {fieldData.required && <span className="text-red-500 ml-1">*</span>}
-                    </label>
-                    <input
-                      id={fieldId}
-                      type="text"
-                      name={fieldName}
-                      required={fieldData.required}
-                      value={formData[fieldName] || fieldData.defaultValue || ''}
-                      onChange={(e) => handleInputChange(fieldName, e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                      placeholder={fieldData.label || 'Enter country'}
-                    />
-                  </div>
-                )
-
               case 'state':
                 return (
                   <div key={index}>
@@ -299,13 +250,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
                     </label>
                     <input
                       id={fieldId}
-                      type="text"
+                      type={fieldData.blockType === 'phone' ? 'tel' : 'text'}
                       name={fieldName}
                       required={fieldData.required}
+                      disabled={isSubmitted}
                       value={formData[fieldName] || fieldData.defaultValue || ''}
                       onChange={(e) => handleInputChange(fieldName, e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                      placeholder={fieldData.label || 'Enter state/province'}
+                      placeholder={fieldData.label || ''}
                     />
                   </div>
                 )
@@ -318,7 +270,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ form, className = '' }) => 
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isSubmitted}
           className="w-full bg-Teal text-white py-3 px-6 rounded-sm font-medium hover:bg-DarkTeal focus:ring-4 focus:ring-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Submitting...' : form.submitButtonLabel || 'Submit'}

@@ -42,20 +42,22 @@ const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
 
   return (
     <section
-      id="features" // Add id for smooth scrolling
-      className={`py-24 px-40 md:px-40 ${bgColorClass}`}
+      id="features"
+      className={`py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-12 xl:px-20 ${bgColorClass}`}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left Side - Heading and Subheading */}
-          <div className="lg:sticky lg:top-24 max-w-sm">
-            <h2 className="text-4xl md:text-[40px] font-bold text-gray-900 leading-tight mb-6">
+          <div className="lg:sticky lg:top-24 max-w-xl">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
               {heading}
             </h2>
-            {subheading && <p className="text-lg text-gray-600 leading-tight">{subheading}</p>}
+            {subheading && (
+              <p className="text-base sm:text-lg text-gray-600 leading-relaxed">{subheading}</p>
+            )}
           </div>
 
-          {/* Right Side - Features List using Features component */}
+          {/* Right Side - Features List */}
           <div>
             <Features
               features={features}
