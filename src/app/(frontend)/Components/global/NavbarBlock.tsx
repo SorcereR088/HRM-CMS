@@ -118,12 +118,7 @@ const NavbarBlock: React.FC<NavbarProps> = (props) => {
             window.scrollTo(0, 0)
           }
         } else {
-          // Scroll to specific section
-          console.log('Should scroll to section:', targetId) // Debug log
-
           const targetElement = document.getElementById(targetId)
-
-          console.log('Target element found:', targetElement) // Debug log
 
           if (targetElement) {
             const navbarHeight = 72

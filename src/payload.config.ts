@@ -12,6 +12,8 @@ import { Media } from './collections/Media'
 import Pages from './collections/Pages'
 import Navbar from './globals/Navbar'
 import Footer from './globals/Footer'
+// Import your custom component
+import SubmissionTableView from '@/app/(frontend)/Components/SubmissionTableView'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -125,14 +127,13 @@ export default buildConfig({
           plural: 'Form Submissions',
         },
         admin: {
-          useAsTitle: 'form',
-          defaultColumns: ['form', 'dynamicFields', 'createdAt'],
-          listSearchableFields: ['dynamicFields'],
+          defaultColumns: ['id', 'form', 'createdAt'],
+          useAsTitle: 'submissionSummary',
         },
         access: {
           read: () => true,
           create: () => true,
-          update: () => true,
+          update: () => false,
           delete: () => true,
         },
         fields: ({ defaultFields }) => [
