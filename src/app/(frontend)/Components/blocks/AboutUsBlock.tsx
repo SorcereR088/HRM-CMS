@@ -17,8 +17,8 @@ interface CTAButton {
 
 interface CompanyInfoBlockProps {
   companyName?: string | null
-  logo?: Media | null
-  illustration?: Media | null
+  logo?: Media | number | null // Accept both Media object and number ID
+  illustration?: Media | number | null // Accept both Media object and number ID
   tagline?: string | null
   description?: string | null
   ctaButton?: CTAButton | null
@@ -50,11 +50,29 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
     gray: 'bg-gray-50',
   }[backgroundColor || 'light-blue']
 
-  const getMediaUrl = (media: Media | null | undefined): string | null => {
+  const getMediaUrl = (media: Media | number | null | undefined): string | null => {
     if (!media) return null
+
+    // If it's a number (ID reference), we can't get the URL directly
+    if (typeof media === 'number') {
+      console.warn('Media is not populated. Expected Media object but got ID:', media)
+      return null
+    }
+
+    // If it's a string URL
     if (typeof media === 'string') return media
+
+    // If it's a Media object with url property
     if (typeof media === 'object' && media.url) return media.url
+
     return null
+  }
+
+  const getMediaAlt = (media: Media | number | null | undefined): string => {
+    if (!media || typeof media === 'number' || typeof media === 'string') {
+      return 'Image'
+    }
+    return media.alt || 'Image'
   }
 
   return (
@@ -64,10 +82,10 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
         <div className="space-y-6">
           {/* Logo or Company Name */}
           <div className="mb-8">
-            {logo ? (
+            {logo && getMediaUrl(logo) ? (
               <img
                 src={getMediaUrl(logo) || ''}
-                alt={logo.alt || 'Company Logo'}
+                alt={getMediaAlt(logo)}
                 className="h-12 sm:h-14 lg:h-24 w-auto object-contain"
               />
             ) : companyName ? (
@@ -105,7 +123,7 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
             <div className="pt-2">
               <a
                 href={ctaButton.url || '#'}
-                className="inline-flex items-center gap-2 text-gray-900 font-semibold text-base sm:text-lg hover:text-Teal hover:underline transition-colors group"
+                className="inline-flex items-center gap-2 text-gray-900 font-semibold text-base sm:text-lg hover:text-teal-600 hover:underline transition-colors group"
               >
                 {ctaButton.text}
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -115,12 +133,12 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
         </div>
 
         {/* Right Illustration */}
-        {illustration && (
+        {illustration && getMediaUrl(illustration) && (
           <div className="flex items-center justify-center lg:justify-end">
             <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[420px] lg:h-[420px] xl:w-[480px] xl:h-[480px]">
               <img
                 src={getMediaUrl(illustration) || ''}
-                alt={illustration.alt || 'Company illustration'}
+                alt={getMediaAlt(illustration)}
                 className="w-full h-full object-contain animate-float"
               />
             </div>

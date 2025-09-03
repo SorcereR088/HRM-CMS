@@ -420,6 +420,31 @@ export interface Page {
         blockName?: string | null;
         blockType: 'companyInfo';
       }
+    | {
+        heading: string;
+        description?: string | null;
+        contactInfo?:
+          | {
+              label: string;
+              value: string;
+              iconType: 'upload' | 'url' | 'lucide' | 'iconify';
+              iconUpload?: (number | null) | Media;
+              iconUrl?: string | null;
+              lucideIcon?: string | null;
+              iconifyIcon?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        formHeading?: string | null;
+        /**
+         * Choose a form created with the Form Builder plugin. Leave empty to use default fields.
+         */
+        form?: (number | null) | Form;
+        backgroundColor?: ('white' | 'gray-50') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'contact-us';
+      }
   )[];
   status?: ('draft' | 'published') | null;
   updatedAt: string;
@@ -936,6 +961,29 @@ export interface PagesSelect<T extends boolean = true> {
                     label?: T;
                     id?: T;
                   };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'contact-us'?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              contactInfo?:
+                | T
+                | {
+                    label?: T;
+                    value?: T;
+                    iconType?: T;
+                    iconUpload?: T;
+                    iconUrl?: T;
+                    lucideIcon?: T;
+                    iconifyIcon?: T;
+                    id?: T;
+                  };
+              formHeading?: T;
+              form?: T;
               backgroundColor?: T;
               id?: T;
               blockName?: T;

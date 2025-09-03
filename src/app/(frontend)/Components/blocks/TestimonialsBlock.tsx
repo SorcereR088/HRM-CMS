@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Icon } from '@iconify/react'
-import { motion } from 'framer-motion'
 
 interface TestimonialItem {
   quote: string
@@ -29,35 +28,16 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
   testimonials = [],
   backgroundColor = 'white',
 }) => {
-  const bgColor = backgroundColor || 'white'
-
   const bgColorClass = {
     white: 'bg-white',
     'gray-50': 'bg-gray-50',
     'teal-50': 'bg-teal-50',
-  }[bgColor]
+  }[backgroundColor || 'white']
 
   const testimonialsArray = Array.isArray(testimonials) ? testimonials : []
   const duplicatedTestimonials = [...testimonialsArray, ...testimonialsArray]
 
-  // Config state for responsiveness
-  const [animationConfig, setAnimationConfig] = useState({ cardWidth: 320, duration: 6 })
-
-  useEffect(() => {
-    const updateConfig = () => {
-      if (window.innerWidth < 640) {
-        setAnimationConfig({ cardWidth: 280 + 16, duration: 6 }) // Mobile
-      } else if (window.innerWidth < 1024) {
-        setAnimationConfig({ cardWidth: 340 + 24, duration: 8 }) // Tablet
-      } else {
-        setAnimationConfig({ cardWidth: 380 + 32, duration: 10 }) // Desktop
-      }
-    }
-
-    updateConfig()
-    window.addEventListener('resize', updateConfig)
-    return () => window.removeEventListener('resize', updateConfig)
-  }, [])
+  const [isHovered, setIsHovered] = useState(false)
 
   // ⭐ Star Rating Component
   const StarRating = ({ rating }: { rating: number }) => (
@@ -76,18 +56,13 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
 
   // ⭐ Testimonial Card
   const TestimonialCard = ({ testimonial }: { testimonial: TestimonialItem }) => (
-    <motion.div
+    <div
       className="bg-gradient-to-br from-[#F5FFFC] to-white p-4 sm:p-6 rounded-xl shadow-sm 
                  border border-gray-200 flex flex-col flex-shrink-0 
                  mx-2 sm:mx-4 w-[280px] sm:w-[340px] lg:w-[380px] 
-                 h-[240px] sm:h-[260px] lg:h-[280px]"
-      whileHover={{
-        scale: 1.01,
-        zIndex: 20,
-        borderColor: '#0d9488',
-        boxShadow: '0 8px 20px rgba(20, 184, 166, 0.2)',
-      }}
-      transition={{ type: 'spring', stiffness: 250, damping: 20 }}
+                 h-[240px] sm:h-[260px] lg:h-[280px]
+                 transition-all duration-300 hover:scale-[1.01] hover:z-20 hover:border-teal-600 
+                 hover:shadow-[0_8px_20px_rgba(20,184,166,0.2)]"
     >
       <div className="flex items-start justify-between">
         <span className="text-3xl sm:text-4xl lg:text-5xl text-teal-500">&quot;</span>
@@ -108,7 +83,7 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
           </p>
         )}
       </div>
-    </motion.div>
+    </div>
   )
 
   return (
@@ -128,19 +103,16 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
 
         {/* Testimonials */}
         {testimonialsArray.length > 0 ? (
-          <div className="relative w-full">
-            <motion.div
-              className="flex overflow-visible" // ✅ allow cards to grow outside
-              animate={{
-                x: [0, -(animationConfig.cardWidth * testimonialsArray.length)],
-              }}
-              transition={{
-                x: {
-                  repeat: Infinity,
-                  repeatType: 'loop',
-                  duration: testimonialsArray.length * animationConfig.duration,
-                  ease: 'linear',
-                },
+          <div
+            className="relative w-full overflow-hidden py-8" // ✅ hide horizontal overflow
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <div
+              className="flex flex-nowrap gap-0" // ✅ nowrap so cards stay in a single row
+              style={{
+                animation: `scroll 40s linear infinite`,
+                animationPlayState: isHovered ? 'paused' : 'running',
               }}
             >
               {duplicatedTestimonials.map((testimonial, index) => (
@@ -149,19 +121,11 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
                   testimonial={testimonial}
                 />
               ))}
-            </motion.div>
+            </div>
 
             {/* Gradient overlays */}
-            <div
-              className="absolute top-0 left-0 w-12 sm:w-16 lg:w-24 h-full 
-                            bg-gradient-to-r from-white via-white/80 to-transparent 
-                            pointer-events-none z-10"
-            />
-            <div
-              className="absolute top-0 right-0 w-12 sm:w-16 lg:w-24 h-full 
-                            bg-gradient-to-l from-white via-white/80 to-transparent 
-                            pointer-events-none z-10"
-            />
+            <div className="absolute top-0 left-0 w-12 sm:w-16 lg:w-24 h-full bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none z-10" />
+            <div className="absolute top-0 right-0 w-12 sm:w-16 lg:w-24 h-full bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10" />
           </div>
         ) : (
           <div className="text-center py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
@@ -180,6 +144,18 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
           </div>
         )}
       </div>
+
+      {/* CSS animation */}
+      <style jsx>{`
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
     </section>
   )
 }

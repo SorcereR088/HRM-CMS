@@ -9,6 +9,8 @@ import CrossPlatform from '../blocks/Crossplatform'
 import Form from '../blocks/Form'
 import BookADemo from '../blocks/BookADemo'
 import AboutUs from '@/blocks/AboutUs'
+import ContactUs from '@/blocks/ContactUs'
+import { Contact } from 'lucide-react'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -87,6 +89,7 @@ const Pages: CollectionConfig = {
         BookADemo,
         Form,
         AboutUs,
+        ContactUs,
       ],
     },
     {
