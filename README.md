@@ -1,6 +1,15 @@
-# Payload Blank Template
+# HRM-CMS - Payload CMS Template
 
-This template comes configured with the bare minimum to get started on anything you need.
+This template comes configured with the bare minimum to get started on anything you need, plus advanced form builder and email functionality for HRM applications.
+
+## Features
+
+- **Form Builder Plugin**: Create dynamic forms with various field types
+- **SMTP Email Integration**: Automated email sending for form submissions
+- **Admin Notifications**: Get notified when forms are submitted
+- **User Confirmations**: Send confirmation emails to form submitters
+- **Email Templates**: Support for field interpolation and HTML formatting
+- **Dynamic Form Handling**: Flexible form submission processing
 
 ## Quick start
 
@@ -18,6 +27,7 @@ After you click the `Deploy` button above, you'll want to have standalone copy o
 
 1. First [clone the repo](#clone) if you have not done so already
 2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URI` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+3. **Configure SMTP Settings**: Update the email configuration in your `.env` file with your SMTP server details. See [Email Configuration](docs/EMAIL_CONFIGURATION.md) for details.
 
 3. `pnpm install && pnpm dev` to install dependencies and start the dev server
 4. open `http://localhost:3000` to open the app in your browser
@@ -51,6 +61,20 @@ See the [Collections](https://payloadcms.com/docs/configuration/collections) doc
 - #### Media
 
   This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+
+- #### Forms
+
+  The form builder plugin enables creation of dynamic forms with email notifications. See [Email Configuration](docs/EMAIL_CONFIGURATION.md) for SMTP setup and [Email Templates](docs/EMAIL_TEMPLATES.md) for template examples.
+
+### Email Configuration
+
+This template includes SMTP email functionality for form submissions. To enable email sending:
+
+1. Configure SMTP settings in your `.env` file
+2. Set up email templates in the Payload admin for your forms
+3. Test form submissions to ensure emails are working
+
+For detailed setup instructions, see the [Email Configuration Guide](docs/EMAIL_CONFIGURATION.md).
 
 ### Docker
 
