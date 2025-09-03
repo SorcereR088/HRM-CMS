@@ -168,6 +168,9 @@ export async function POST(request: NextRequest) {
         fieldCount: dynamicFields.length,
       })
 
+      // Handle email sending if configured in the form
+      await handleFormEmails(payload, formData, submissionData, dynamicFields, submissionSummary)
+
       return NextResponse.json(
         {
           message: 'Form submitted successfully',
@@ -199,4 +202,142 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     )
   }
+}
+
+// Helper function to handle email sending for form submissions
+async function handleFormEmails(
+  payload: any,
+  formData: Form,
+  submissionData: SubmissionData,
+  dynamicFields: DynamicField[],
+  submissionSummary: string
+) {
+  try {
+    // Check if the form has email configurations
+    if (!formData.emails || !Array.isArray(formData.emails) || formData.emails.length === 0) {
+      console.log('No email configurations found for form:', formData.title)
+      return
+    }
+
+    console.log('Processing emails for form:', formData.title, 'Email configs:', formData.emails.length)
+
+    // Process each email configuration
+    for (const emailConfig of formData.emails) {
+      if (!emailConfig || !emailConfig.subject) {
+        console.log('Skipping invalid email configuration')
+        continue
+      }
+
+      try {
+        // Parse email addresses (could be comma-separated)
+        const emailTo = emailConfig.emailTo?.split(',').map(email => email.trim()).filter(Boolean) || []
+        const cc = emailConfig.cc?.split(',').map(email => email.trim()).filter(Boolean) || []
+        const bcc = emailConfig.bcc?.split(',').map(email => email.trim()).filter(Boolean) || []
+
+        if (emailTo.length === 0) {
+          console.log('No valid email recipients found, skipping email')
+          continue
+        }
+
+        // Process subject with field replacements
+        const processedSubject = processEmailTemplate(emailConfig.subject, submissionData, submissionSummary)
+
+        // Process message content with field replacements
+        let processedMessage = ''
+        if (emailConfig.message?.root) {
+          // Extract text content from Lexical editor format
+          processedMessage = extractTextFromLexical(emailConfig.message.root)
+        }
+        
+        // If no message content, create a default message with form data
+        if (!processedMessage.trim()) {
+          processedMessage = `New form submission received for: ${formData.title}\n\n${submissionSummary}`
+        }
+
+        processedMessage = processEmailTemplate(processedMessage, submissionData, submissionSummary)
+
+        console.log('Sending email:', {
+          to: emailTo,
+          subject: processedSubject,
+          from: emailConfig.emailFrom || process.env.MAIL_FROM_ADDRESS
+        })
+
+        // Send email using Payload's email functionality
+        await payload.sendEmail({
+          to: emailTo.join(', '),
+          cc: cc.length > 0 ? cc.join(', ') : undefined,
+          bcc: bcc.length > 0 ? bcc.join(', ') : undefined,
+          replyTo: emailConfig.replyTo || undefined,
+          from: emailConfig.emailFrom || process.env.MAIL_FROM_ADDRESS || 'noreply@yakhrm.com',
+          subject: processedSubject,
+          text: processedMessage,
+        })
+
+        console.log('Email sent successfully to:', emailTo.join(', '))
+
+      } catch (emailError) {
+        console.error('Error sending email:', emailError)
+        // Continue with other emails even if one fails
+      }
+    }
+
+  } catch (error) {
+    console.error('Error in handleFormEmails:', error)
+  }
+}
+
+// Helper function to process email templates with field replacements
+function processEmailTemplate(template: string, submissionData: SubmissionData, submissionSummary: string): string {
+  let processed = template
+
+  // Replace {{*}} with full submission summary
+  processed = processed.replace(/\{\{\*\}\}/g, submissionSummary)
+
+  // Replace {{*:table}} with HTML table format
+  processed = processed.replace(/\{\{\*:table\}\}/g, createHtmlTable(submissionData))
+
+  // Replace individual field values {{fieldName}}
+  Object.entries(submissionData).forEach(([fieldName, fieldValue]) => {
+    const regex = new RegExp(`\\{\\{${fieldName}\\}\\}`, 'g')
+    processed = processed.replace(regex, String(fieldValue || ''))
+  })
+
+  return processed
+}
+
+// Helper function to create HTML table from submission data
+function createHtmlTable(submissionData: SubmissionData): string {
+  const rows = Object.entries(submissionData)
+    .map(([field, value]) => `<tr><td><strong>${field}</strong></td><td>${value || ''}</td></tr>`)
+    .join('')
+  
+  return `<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
+    <thead>
+      <tr><th>Field</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      ${rows}
+    </tbody>
+  </table>`
+}
+
+// Helper function to extract text content from Lexical editor format
+function extractTextFromLexical(lexicalContent: any): string {
+  if (!lexicalContent || !lexicalContent.children) {
+    return ''
+  }
+
+  const extractText = (children: any[]): string => {
+    return children.map((child: any) => {
+      if (child.text) {
+        return child.text
+      }
+      if (child.children) {
+        return extractText(child.children)
+      }
+      return ''
+    }).join('')
+  }
+
+  return extractText(lexicalContent.children)
 }

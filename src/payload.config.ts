@@ -3,6 +3,7 @@ import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -64,6 +65,19 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+    },
+  }),
+  email: nodemailerAdapter({
+    defaultFromAddress: process.env.MAIL_FROM_ADDRESS || 'noreply@yakhrm.com',
+    defaultFromName: process.env.MAIL_FROM_NAME || 'Yak HRM',
+    transportOptions: {
+      host: process.env.MAIL_HOST || 'localhost',
+      port: parseInt(process.env.MAIL_PORT || '587'),
+      secure: process.env.MAIL_ENCRYPTION === 'tls', // true for 465, false for other ports
+      auth: process.env.MAIL_USERNAME && process.env.MAIL_USERNAME !== 'null' ? {
+        user: process.env.MAIL_USERNAME,
+        pass: process.env.MAIL_PASSWORD,
+      } : undefined,
     },
   }),
   sharp,
