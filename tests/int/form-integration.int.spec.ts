@@ -6,11 +6,11 @@ describe('Form System Integration', () => {
     const fs = require('fs')
     const path = require('path')
     
-    const formsApiPath = path.join(process.cwd(), 'src/app/api/forms/[id]/route.ts')
-    const submissionsApiPath = path.join(process.cwd(), 'src/app/api/form-submissions/route.ts')
+    // The form builder plugin creates collections automatically through Payload CMS
+    // We should check for the submit-form API endpoint that we created
+    const submitFormApiPath = path.join(process.cwd(), 'src/app/api/submit-form/route.ts')
     
-    expect(fs.existsSync(formsApiPath)).toBe(true)
-    expect(fs.existsSync(submissionsApiPath)).toBe(true)
+    expect(fs.existsSync(submitFormApiPath)).toBe(true)
   })
 
   it('should have updated BookADemo component structure', () => {
