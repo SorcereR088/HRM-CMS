@@ -3,6 +3,7 @@ import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -66,6 +67,27 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
   }),
+  
+  // Configure SMTP email transport - only in production/development, not during testing
+  ...(process.env.NODE_ENV !== 'test' ? {
+    email: nodemailerAdapter({
+      defaultFromAddress: process.env.MAIL_FROM_ADDRESS || 'sofware@vianet.com.np',
+      defaultFromName: process.env.MAIL_FROM_NAME || 'Yak HRM',
+      transportOptions: {
+        host: process.env.MAIL_HOST || '172.16.61.53',
+        port: parseInt(process.env.MAIL_PORT || '25', 10),
+        secure: false, // true for 465, false for other ports
+        auth: process.env.MAIL_USERNAME && process.env.MAIL_USERNAME !== 'null' ? {
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD || '',
+        } : undefined,
+        tls: {
+          rejectUnauthorized: false, // Allow self-signed certificates for internal servers
+        },
+      },
+    }),
+  } : {}),
+
   sharp,
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
   cors: [
