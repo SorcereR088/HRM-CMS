@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { Form } from '@/payload-types'
+import EmailService from '@/utils/email-service'
 
 // Define interfaces for type safety
 interface FormField {
@@ -168,6 +169,31 @@ export async function POST(request: NextRequest) {
         fieldCount: dynamicFields.length,
       })
 
+      // Check if this is a demo booking form and send emails
+      let emailResults = null
+      if (formData.title && formData.title.toLowerCase().includes('demo')) {
+        console.log('Detected demo booking form, attempting to send emails...')
+        
+        // Validate and extract booking data
+        const validation = EmailService.validateBookingFormData(submissionData)
+        
+        if (validation.isValid && validation.formData) {
+          try {
+            emailResults = await EmailService.sendBookingEmails(validation.formData)
+            console.log('Email sending results:', emailResults)
+          } catch (emailError) {
+            console.error('Email sending failed:', emailError)
+            // Don't fail the form submission if email fails
+            emailResults = {
+              customerEmail: { success: false, message: 'Email sending failed', error: String(emailError) },
+              adminEmail: { success: false, message: 'Email sending failed', error: String(emailError) },
+            }
+          }
+        } else {
+          console.log('Form data validation failed for email:', validation.errors)
+        }
+      }
+
       return NextResponse.json(
         {
           message: 'Form submitted successfully',
@@ -176,6 +202,14 @@ export async function POST(request: NextRequest) {
             form: submission.form,
             createdAt: submission.createdAt,
           },
+          emails: emailResults ? {
+            customerEmailSent: emailResults.customerEmail.success,
+            adminEmailSent: emailResults.adminEmail.success,
+            emailErrors: [
+              ...(emailResults.customerEmail.success ? [] : [emailResults.customerEmail.error]),
+              ...(emailResults.adminEmail.success ? [] : [emailResults.adminEmail.error]),
+            ].filter(Boolean),
+          } : null,
         },
         { status: 201 },
       )
