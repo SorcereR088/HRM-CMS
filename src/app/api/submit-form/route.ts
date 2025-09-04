@@ -31,8 +31,6 @@ interface RequestBody {
 
 export async function POST(request: NextRequest) {
   try {
-    const payload = await getPayload({ config })
-
     let requestData: RequestBody
     try {
       requestData = await request.json()
@@ -45,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     console.log('Received form submission:', { form, submissionData })
 
-    // Validate form ID - accept both string and number
+    // Validate form ID - accept both string and number, plus special demo-booking form
     if (!form || (typeof form !== 'string' && typeof form !== 'number')) {
       console.error('Invalid form ID:', form, typeof form)
       return NextResponse.json({ message: 'Valid form ID is required' }, { status: 400 })
@@ -53,6 +51,56 @@ export async function POST(request: NextRequest) {
 
     // Convert to string if it's a number
     const formId = String(form)
+
+    // Handle special demo-booking form without database dependency
+    if (formId === 'demo-booking') {
+      console.log('Processing demo booking form submission')
+      
+      // Validate and send emails for demo booking
+      const validation = EmailService.validateBookingFormData(submissionData)
+      
+      if (!validation.isValid) {
+        return NextResponse.json(
+          { message: 'Invalid form data', errors: validation.errors },
+          { status: 400 }
+        )
+      }
+
+      let emailResults = null
+      if (validation.formData) {
+        try {
+          emailResults = await EmailService.sendBookingEmails(validation.formData)
+          console.log('Demo booking emails sent:', emailResults)
+        } catch (emailError) {
+          console.error('Failed to send demo booking emails:', emailError)
+          emailResults = {
+            customerEmail: { success: false, message: 'Email sending failed', error: String(emailError) },
+            adminEmail: { success: false, message: 'Email sending failed', error: String(emailError) },
+          }
+        }
+      }
+
+      // Return success response for demo booking
+      return NextResponse.json(
+        {
+          message: 'Demo booking submitted successfully',
+          formType: 'demo-booking',
+          submissionId: `demo-${Date.now()}`,
+          emails: emailResults ? {
+            customerEmailSent: emailResults.customerEmail.success,
+            adminEmailSent: emailResults.adminEmail.success,
+            emailErrors: [
+              ...(emailResults.customerEmail.success ? [] : [emailResults.customerEmail.error]),
+              ...(emailResults.adminEmail.success ? [] : [emailResults.adminEmail.error]),
+            ].filter(Boolean),
+          } : null,
+        },
+        { status: 201 },
+      )
+    }
+
+    // For regular PayloadCMS forms, continue with the original logic that requires database
+    const payload = await getPayload({ config })
 
     // Validate submission data
     if (

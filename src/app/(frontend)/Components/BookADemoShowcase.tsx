@@ -1,108 +1,74 @@
 'use client'
 
-import React from 'react'
-import { Form } from '@/payload-types'
-import FormRenderer from './FormRenderer'
+import React, { useState } from 'react'
 
-// Demo form data structure - this will be connected to an actual form from PayloadCMS
-const demoForm: Form = {
-  id: 1,
-  title: 'Book a Demo',
-  fields: [
-    {
-      blockType: 'text',
-      name: 'fullName',
-      label: 'Full Name',
-      required: true,
-      id: 'fullName',
-    },
-    {
-      blockType: 'email',
-      name: 'email',
-      label: 'Email Address',
-      required: true,
-      id: 'email',
-    },
-    {
-      blockType: 'text',
-      name: 'phone',
-      label: 'Phone Number',
-      required: false,
-      id: 'phone',
-    },
-    {
-      blockType: 'text',
-      name: 'company',
-      label: 'Company Name',
-      required: false,
-      id: 'company',
-    },
-    {
-      blockType: 'textarea',
-      name: 'message',
-      label: 'Message / Requirements',
-      required: false,
-      id: 'message',
-    },
-  ],
-  submitButtonLabel: 'Book Demo',
-  confirmationType: 'message',
-  confirmationMessage: {
-    root: {
-      type: 'root',
-      children: [
-        {
-          type: 'paragraph',
-          version: 1,
-          children: [
-            {
-              type: 'text',
-              version: 1,
-              text: 'Thank you for your interest! We will contact you shortly to schedule your demo.',
-            },
-          ],
-        },
-      ],
-      direction: null,
-      format: '',
-      indent: 0,
-      version: 1,
-    },
-  },
-  emails: [
-    {
-      emailTo: 'admin@example.com',
-      subject: 'New Demo Booking Request',
-      emailFrom: 'sofware@vianet.com.np',
-      message: {
-        root: {
-          type: 'root',
-          children: [
-            {
-              type: 'paragraph',
-              version: 1,
-              children: [
-                {
-                  type: 'text',
-                  version: 1,
-                  text: 'A new demo booking request has been submitted. {{*:table}}',
-                },
-              ],
-            },
-          ],
-          direction: null,
-          format: '',
-          indent: 0,
-          version: 1,
-        },
-      },
-    },
-  ],
-  updatedAt: new Date().toISOString(),
-  createdAt: new Date().toISOString(),
+interface BookingFormData {
+  fullName: string
+  email: string
+  phone: string
+  company: string
+  message: string
 }
 
 const BookADemoShowcase: React.FC = () => {
+  const [formData, setFormData] = useState<BookingFormData>({
+    fullName: '',
+    email: '',
+    phone: '',
+    company: '',
+    message: '',
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleInputChange = (name: keyof BookingFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setError(null)
+
+    try {
+      // Create a demo form submission with the booking data
+      const response = await fetch('/api/submit-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          form: 'demo-booking', // Use a special form identifier for demo bookings
+          submissionData: formData,
+        }),
+      })
+
+      if (response.ok) {
+        const responseData = await response.json()
+        console.log('Demo booking submission successful:', responseData)
+        setIsSubmitted(true)
+        
+        // Clear form fields
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          company: '',
+          message: '',
+        })
+      } else {
+        const errorData = await response.json()
+        setError(errorData.message || 'Failed to submit demo booking request')
+      }
+    } catch (err) {
+      console.error('Network error:', err)
+      setError('Network error. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -125,7 +91,114 @@ const BookADemoShowcase: React.FC = () => {
             </p>
           </div>
 
-          <FormRenderer form={demoForm} className="space-y-6" />
+          {/* Success message */}
+          {isSubmitted && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-green-800">Demo booking submitted successfully!</p>
+                  <p className="mt-1 text-sm text-green-700">
+                    Thank you for your interest! Our team will contact you within 24 hours to schedule your demo.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
+
+          {/* The Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                required
+                value={formData.fullName}
+                onChange={(e) => handleInputChange('fullName', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                required
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your email address"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your phone number"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                Company Name
+              </label>
+              <input
+                type="text"
+                id="company"
+                value={formData.company}
+                onChange={(e) => handleInputChange('company', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your company name"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                Message / Requirements
+              </label>
+              <textarea
+                id="message"
+                rows={4}
+                value={formData.message}
+                onChange={(e) => handleInputChange('message', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Tell us about your requirements or ask any questions"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            >
+              {isSubmitting ? 'Submitting...' : 'Book Demo'}
+            </button>
+          </form>
 
           <div className="mt-8 p-4 bg-blue-50 rounded-lg">
             <h3 className="font-semibold text-blue-900 mb-2">What to Expect:</h3>

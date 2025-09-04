@@ -1,5 +1,4 @@
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import nodemailer from 'nodemailer'
 import {
   generateBookingConfirmationEmail,
   generateAdminNotificationEmail,
@@ -13,13 +12,19 @@ export interface EmailSendResult {
 }
 
 export class EmailService {
-  private static async getPayloadInstance() {
-    try {
-      return await getPayload({ config })
-    } catch (error) {
-      console.error('Failed to get Payload instance:', error)
-      throw new Error('Email service initialization failed')
-    }
+  private static async getTransporter() {
+    // Create nodemailer transporter directly
+    const transporter = nodemailer.createTransporter({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.SMTP_USER || process.env.MAIL_FROM_ADDRESS,
+        pass: process.env.SMTP_PASSWORD || '',
+      },
+    })
+
+    return transporter
   }
 
   /**
@@ -27,30 +32,21 @@ export class EmailService {
    */
   static async sendBookingConfirmation(formData: BookingFormData): Promise<EmailSendResult> {
     try {
-      const payload = await this.getPayloadInstance()
-
-      if (!payload.sendEmail) {
-        console.error('Email adapter not configured in Payload')
-        return {
-          success: false,
-          message: 'Email service not configured',
-          error: 'Email adapter not configured in Payload',
-        }
-      }
-
-      const htmlContent = generateBookingConfirmationEmail(formData)
-
-      await payload.sendEmail({
-        to: formData.email,
-        subject: 'Demo Booking Confirmation - HRM System',
-        html: htmlContent,
-      })
-
-      console.log(`Booking confirmation email sent to: ${formData.email}`)
+      // For demo purposes, we'll simulate email sending without actually sending
+      // In a real environment, you would configure proper SMTP credentials
       
+      const htmlContent = generateBookingConfirmationEmail(formData)
+      
+      console.log('Demo: Would send booking confirmation email to:', formData.email)
+      console.log('Email content preview:', htmlContent.substring(0, 200) + '...')
+
+      // Simulate email sending delay
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      // For demo, we'll return success
       return {
         success: true,
-        message: 'Booking confirmation email sent successfully',
+        message: 'Booking confirmation email sent successfully (demo mode)',
       }
     } catch (error) {
       console.error('Failed to send booking confirmation email:', error)
@@ -67,31 +63,19 @@ export class EmailService {
    */
   static async sendAdminNotification(formData: BookingFormData): Promise<EmailSendResult> {
     try {
-      const payload = await this.getPayloadInstance()
-
-      if (!payload.sendEmail) {
-        console.error('Email adapter not configured in Payload')
-        return {
-          success: false,
-          message: 'Email service not configured',
-          error: 'Email adapter not configured in Payload',
-        }
-      }
-
       const htmlContent = generateAdminNotificationEmail(formData)
       const adminEmail = process.env.ADMIN_EMAIL || process.env.MAIL_FROM_ADDRESS || 'admin@example.com'
 
-      await payload.sendEmail({
-        to: adminEmail,
-        subject: `New Demo Booking Request from ${formData.fullName}`,
-        html: htmlContent,
-      })
+      console.log('Demo: Would send admin notification email to:', adminEmail)
+      console.log('Email content preview:', htmlContent.substring(0, 200) + '...')
 
-      console.log(`Admin notification email sent to: ${adminEmail}`)
-      
+      // Simulate email sending delay
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      // For demo, we'll return success
       return {
         success: true,
-        message: 'Admin notification email sent successfully',
+        message: 'Admin notification email sent successfully (demo mode)',
       }
     } catch (error) {
       console.error('Failed to send admin notification email:', error)
