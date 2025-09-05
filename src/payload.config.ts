@@ -7,14 +7,14 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { testEmailHandler } from './endpoints/test-email'
+import { generateFormSubmissionEmail } from './templates/FormSubmissionEmail'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import Pages from './collections/Pages'
 import Navbar from './globals/Navbar'
 import Footer from './globals/Footer'
-// Import your custom component
-import SubmissionTableView from '@/app/(frontend)/Components/SubmissionTableView'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -57,6 +57,14 @@ export default buildConfig({
   collections: [Users, Media, Pages],
   globals: [Navbar, Footer],
 
+  endpoints: [
+    {
+      path: '/test-email',
+      method: 'get',
+      handler: testEmailHandler,
+    },
+  ],
+
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -67,26 +75,29 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
   }),
-  
-  // Configure SMTP email transport - only in production/development, not during testing
-  ...(process.env.NODE_ENV !== 'test' ? {
-    email: nodemailerAdapter({
-      defaultFromAddress: process.env.MAIL_FROM_ADDRESS || 'sofware@vianet.com.np',
-      defaultFromName: process.env.MAIL_FROM_NAME || 'Yak HRM',
-      transportOptions: {
-        host: process.env.MAIL_HOST || '172.16.61.53',
-        port: parseInt(process.env.MAIL_PORT || '25', 10),
-        secure: false, // true for 465, false for other ports
-        auth: process.env.MAIL_USERNAME && process.env.MAIL_USERNAME !== 'null' ? {
-          user: process.env.MAIL_USERNAME,
-          pass: process.env.MAIL_PASSWORD || '',
-        } : undefined,
-        tls: {
-          rejectUnauthorized: false, // Allow self-signed certificates for internal servers
-        },
-      },
-    }),
-  } : {}),
+
+  ...(process.env.NODE_ENV !== 'test'
+    ? {
+        email: nodemailerAdapter({
+          defaultFromAddress: process.env.MAIL_FROM_ADDRESS || 'software@vianet.com.np',
+          defaultFromName: process.env.MAIL_FROM_NAME?.replace(/"/g, '') || 'Yak HRM',
+          transportOptions: {
+            host: process.env.MAIL_HOST || '172.16.61.53',
+            port: parseInt(process.env.MAIL_PORT || '25', 10),
+            secure: false,
+            auth: undefined,
+            tls: {
+              rejectUnauthorized: false,
+            },
+            debug: process.env.NODE_ENV === 'development',
+            logger: process.env.NODE_ENV === 'development',
+            connectionTimeout: 60000,
+            greetingTimeout: 30000,
+            socketTimeout: 60000,
+          },
+        }),
+      }
+    : {}),
 
   sharp,
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
@@ -205,6 +216,43 @@ export default buildConfig({
             },
           },
         ],
+        hooks: {
+          afterChange: [
+            async ({ doc, req, operation }) => {
+              if (operation === 'create') {
+                try {
+                  console.log('📧 Processing form submission email for ID:', doc.id)
+
+                  const formTitle = doc.form?.title || 'Unknown Form'
+                  const serverUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'localhost:3000'
+
+                  // Generate email content using template
+                  const emailContent = generateFormSubmissionEmail({
+                    id: doc.id,
+                    formTitle,
+                    createdAt: doc.createdAt,
+                    submissionData: doc.submissionData,
+                    serverUrl,
+                  })
+
+                  // Send the email
+                  const result = await req.payload.sendEmail({
+                    to:
+                      process.env.ADMIN_EMAIL ||
+                      process.env.MAIL_FROM_ADDRESS ||
+                      'admin@vianet.com.np',
+                    from: process.env.MAIL_FROM_ADDRESS || 'software@vianet.com.np',
+                    ...emailContent,
+                  })
+
+                  console.log('✅ Email sent successfully:', result)
+                } catch (error: any) {
+                  console.error('❌ Email notification failed:', error.message)
+                }
+              }
+            },
+          ],
+        },
       },
     }),
   ],
