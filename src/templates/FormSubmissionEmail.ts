@@ -25,7 +25,6 @@ export const generateFormSubmissionEmail = (data: FormSubmissionData) => {
   let formFieldsText = ''
 
   if (submissionData && Array.isArray(submissionData)) {
-    // Handle array format (most common with Payload form builder)
     submissionData.forEach((field, index) => {
       if (typeof field === 'object' && field !== null) {
         const fieldName = field.name || field.field || `Field ${index + 1}`
@@ -33,32 +32,31 @@ export const generateFormSubmissionEmail = (data: FormSubmissionData) => {
         const fieldLabel = fieldMappings[fieldName] || field.label || fieldName
 
         formFieldsHtml += `
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f0f0f0;">
-            <div style="color: #666666; font-size: 16px; font-weight: 400;">
+          <tr>
+            <td style="padding: 12px 15px; border-bottom: 1px solid #e9ecef; background-color: #f8f9fa; font-weight: 600; color: #495057; width: 35%;">
               ${fieldLabel}
-            </div>
-            <div style="color: #000000; font-size: 16px; font-weight: 500; text-align: right; max-width: 60%;">
+            </td>
+            <td style="padding: 12px 15px; border-bottom: 1px solid #e9ecef; color: #495057;">
               ${fieldValue}
-            </div>
-          </div>
+            </td>
+          </tr>
         `
         formFieldsText += `${fieldLabel}: ${fieldValue}\n`
       }
     })
   } else if (submissionData && typeof submissionData === 'object') {
-    // Handle object format
     Object.entries(submissionData).forEach(([key, value]) => {
       const fieldLabel = fieldMappings[key] || key.charAt(0).toUpperCase() + key.slice(1)
 
       formFieldsHtml += `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f0f0f0;">
-          <div style="color: #666666; font-size: 16px; font-weight: 400;">
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #666666; font-size: 14px; width: 140px; vertical-align: top;">
             ${fieldLabel}
-          </div>
-          <div style="color: #000000; font-size: 16px; font-weight: 500; text-align: right; max-width: 60%;">
+          </td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #000000; font-weight: 600;">
             ${value || '(No value provided)'}
-          </div>
-        </div>
+          </td>
+        </tr>
       `
       formFieldsText += `${fieldLabel}: ${value || '(No value provided)'}\n`
     })
@@ -67,23 +65,25 @@ export const generateFormSubmissionEmail = (data: FormSubmissionData) => {
   // Fallback if no data
   if (!formFieldsHtml) {
     formFieldsHtml = `
-      <div style="padding: 40px; text-align: center; color: #999999; font-style: italic;">
-        No form data received
-      </div>
+      <tr>
+        <td colspan="2" style="padding: 20px; text-align: center; color: #6c757d; font-style: italic;">
+          No form data received
+        </td>
+      </tr>
     `
     formFieldsText = 'No form data received'
   }
 
-  const subject = `New ${formTitle} Submission - #${id}`
+  const subject = `New ${formTitle} Submission - ID #${id}`
 
   const textContent = `
-NEW FORM SUBMISSION
+NEW FORM SUBMISSION RECEIVED
 
 Form: ${formTitle}
-Submission ID: #${id}
+Submission ID: ${id}
 Submitted: ${new Date(createdAt).toLocaleString()}
 
-SUBMISSION DETAILS:
+CONTACT DETAILS:
 ${formFieldsText}
 
 Access the admin panel to view full details and manage this submission.
@@ -95,62 +95,46 @@ Access the admin panel to view full details and manage this submission.
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>New ${formTitle} Submission</title>
+      <title>${formTitle} Submission</title>
     </head>
-    <body style="margin: 0; padding: 0; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;">
-      
-      <!-- Container -->
-      <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <body style="margin: 0; padding: 0; background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;">
+      <div style="max-width: 680px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
         
         <!-- Header -->
-        <div style="margin-bottom: 40px;">
-          <!-- Company Logo/Name -->
-          <div style="display: flex; align-items: center; margin-bottom: 30px;">
-            <div style="width: 12px; height: 12px; background-color: #ff6b6b; border-radius: 50%; margin-right: 6px;"></div>
-            <div style="width: 12px; height: 12px; background-color: #4ecdc4; border-radius: 50%; margin-right: 6px;"></div>
-            <div style="width: 12px; height: 12px; background-color: #45b7d1; border-radius: 50%; margin-right: 12px;"></div>
-            <span style="color: #000000; font-size: 18px; font-weight: 600;">Company</span>
-          </div>
-
-          <!-- Main Title -->
-          <h1 style="margin: 0; color: #000000; font-size: 32px; font-weight: 700; line-height: 1.2;">
-            New form<br>
-            submission 📋
+        <div style="background: linear-gradient(135deg, #00AA77 0%, #002D20 100%); padding: 30px 40px; text-align: center;">
+          <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 300; letter-spacing: 1px;">
+            New Form Submission
           </h1>
-        </div>
-
-        <!-- Greeting -->
-        <div style="margin-bottom: 30px;">
-          <p style="margin: 0; color: #000000; font-size: 16px; line-height: 1.5;">
-            Hi there,
-          </p>
-          <p style="margin: 10px 0 0 0; color: #000000; font-size: 16px; line-height: 1.5;">
-            You've received a new ${formTitle.toLowerCase()} submission 
-            #${id}. Here are the details:
+          <p style="margin: 10px 0 0 0; color: #e8eaff; font-size: 16px; opacity: 0.9;">
+            ${formTitle}
           </p>
         </div>
 
-        <!-- Submission Summary -->
-        <div style="background-color: #ffffff; border: 1px solid #f0f0f0; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
-          <h2 style="margin: 0 0 20px 0; color: #000000; font-size: 20px; font-weight: 600;">
-            Submission summary
-          </h2>
+        <!-- Content -->
+        <div style="padding: 40px;">
           
           <!-- Submission Info -->
-          <div style="display: flex; align-items: flex-start; margin-bottom: 30px;">
-            <div style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 16px; flex-shrink: 0;">
-              <span style="font-size: 24px;">📋</span>
+          <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <h2 style="margin: 0; color: #495057; font-size: 20px; font-weight: 600;">
+                Submission Details
+              </h2>
+              <span style="background-color: #28a745; color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                New
+              </span>
             </div>
-            <div style="flex: 1;">
-              <div style="color: #000000; font-size: 16px; font-weight: 600; margin-bottom: 4px;">
-                ${formTitle}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; color: #6c757d; font-size: 14px;">
+              <div>
+                <strong style="color: #495057;">Submission ID:</strong><br>
+                #${id}
               </div>
-              <div style="color: #666666; font-size: 14px;">
-                Submitted ${new Date(createdAt).toLocaleDateString('en-US', {
+              <div>
+                <strong style="color: #495057;">Date & Time:</strong><br>
+                ${new Date(createdAt).toLocaleString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
                   month: 'long',
                   day: 'numeric',
-                  year: 'numeric',
-                })} at ${new Date(createdAt).toLocaleTimeString('en-US', {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}
@@ -158,37 +142,30 @@ Access the admin panel to view full details and manage this submission.
             </div>
           </div>
 
-          <!-- Form Fields -->
-          <div>
-            ${formFieldsHtml}
+          <!-- Form Data -->
+          <div style="margin-bottom: 30px;">
+            <h3 style="color: #495057; font-size: 18px; font-weight: 600; margin: 0 0 20px 0; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+              Contact Information
+            </h3>
+            <table style="width: 100%; border-collapse: collapse; background-color: #ffffff; border: 1px solid #e9ecef; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);">
+              ${formFieldsHtml}
+            </table>
           </div>
 
-          <!-- Total/Summary Row -->
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px 0 0 0; border-top: 2px solid #000000; margin-top: 20px;">
-            <div style="color: #000000; font-size: 18px; font-weight: 700;">
-              Submission ID
-            </div>
-            <div style="color: #000000; font-size: 18px; font-weight: 700;">
-              #${id}
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Button -->
-        <div style="margin-bottom: 40px;">
-          <a href="${serverUrl}/admin/collections/form-submissions" 
-             style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-            View in Admin Panel
+          <!-- Action Button -->
+          <div style="text-align: center; margin: 30px 0;">
+           <a href="${serverUrl}/admin/collections/form-submissions" 
+             style="display: inline-block; background: #00AA77; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+              View in Admin Panel
           </a>
+          </div>
         </div>
 
         <!-- Footer -->
-        <div style="color: #999999; font-size: 14px; line-height: 1.5;">
-          <p style="margin: 0;">
-            This notification was sent automatically by your Payload CMS system.
-          </p>
-          <p style="margin: 8px 0 0 0;">
-            Server: ${serverUrl}
+        <div style="background-color: #f8f9fa; border-top: 1px solid #e9ecef; padding: 25px 40px; text-align: center;">
+          <p style="margin: 0; color: #6c757d; font-size: 13px; line-height: 1.6;">
+            This notification was sent automatically by your Payload CMS system.<br>
+            <span style="color: #adb5bd;">Server: ${serverUrl}</span>
           </p>
         </div>
       </div>
