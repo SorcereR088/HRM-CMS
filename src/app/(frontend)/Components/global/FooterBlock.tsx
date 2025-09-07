@@ -43,7 +43,8 @@ interface FooterBlockProps {
   blockType: 'footer'
   id?: string | null
   blockName?: string | null
-  [key: string]: any
+  // Additional properties that might come from Payload CMS
+  width?: number | null
 }
 
 // Global props
@@ -78,7 +79,7 @@ const FooterBlock: React.FC<FooterProps> = (props) => {
     'custom-teal': 'bg-teal-500',
   }[backgroundColor || 'teal-gradient']
 
-  const getSocialIcon = (platform: string) => {
+  const getSocialIcon = (platform: string): string => {
     const platformLower = platform.toLowerCase()
     if (platformLower.includes('linkedin')) return 'mdi:linkedin'
     if (platformLower.includes('instagram')) return 'mdi:instagram'

@@ -12,7 +12,7 @@ interface FormBlockProps {
   blockName?: string | null
 }
 
-const FormBlock: React.FC<FormBlockProps> = ({ form, enableAjax = true }) => {
+const FormBlock: React.FC<FormBlockProps> = ({ form, enableAjax: _enableAjax = true }) => {
   const [formData, setFormData] = useState<Form | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

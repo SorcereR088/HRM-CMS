@@ -1,11 +1,35 @@
 'use client'
 
 import React from 'react'
-import { ChevronDown } from 'lucide-react'
 
-// Accept any props that match the PayloadCMS structure
+// Define types for the component props
+interface ContactInfo {
+  label?: string
+  email?: string
+}
+
+interface JobListing {
+  id?: string
+  title: string
+  category: string
+  jobType: 'full-time' | 'part-time' | 'contract' | 'internship' | 'remote'
+  salaryRange?: string
+  location: string
+  applicationFormUrl: string
+}
+
+interface CtaButton {
+  text: string
+  style: 'primary' | 'secondary' | 'outline'
+}
+
 interface CareersBlockProps {
-  [key: string]: any
+  heading?: string
+  description?: string
+  contactInfo?: ContactInfo
+  jobListings?: JobListing[]
+  ctaButton?: CtaButton
+  backgroundColor?: string
 }
 
 const CareersBlock: React.FC<CareersBlockProps> = (props) => {
@@ -20,10 +44,10 @@ const CareersBlock: React.FC<CareersBlockProps> = (props) => {
 
   // Handle null/undefined values
   const safeJobListings = jobListings || []
-  const safeCta = ctaButton || { text: 'Submit Application', style: 'primary' }
+  const safeCta = ctaButton || { text: 'Submit Application', style: 'primary' as const }
   const safeBgColor = backgroundColor || 'white'
 
-  const getJobTypeDisplay = (jobType: string) => {
+  const getJobTypeDisplay = (jobType: string): string => {
     const typeMap: Record<string, string> = {
       'full-time': 'Full Time',
       'part-time': 'Part Time',
@@ -34,7 +58,7 @@ const CareersBlock: React.FC<CareersBlockProps> = (props) => {
     return typeMap[jobType] || jobType
   }
 
-  const getButtonClasses = (style: string) => {
+  const getButtonClasses = (style: string): string => {
     const baseClasses =
       'px-6 py-2 rounded-full font-medium transition-all duration-200 flex items-center gap-2'
 
@@ -87,7 +111,7 @@ const CareersBlock: React.FC<CareersBlockProps> = (props) => {
           <div className="lg:w-2/3">
             {safeJobListings.length > 0 ? (
               <div className="space-y-6">
-                {safeJobListings.map((job: any, index: number) => (
+                {safeJobListings.map((job, index: number) => (
                   <div
                     key={job.id || index}
                     className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200"

@@ -30,7 +30,7 @@ const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
   subheading,
   features,
   backgroundColor = 'gray-50',
-  id,
+  id: _id,
 }) => {
   const bgColor = backgroundColor || 'gray-50'
 

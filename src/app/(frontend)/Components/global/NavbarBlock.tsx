@@ -112,7 +112,7 @@ const NavbarBlock: React.FC<NavbarProps> = (props) => {
               top: 0,
               behavior: 'smooth',
             })
-          } catch (error) {
+          } catch (_error) {
             // Fallback for older browsers
             console.log('Using fallback scroll method')
             window.scrollTo(0, 0)
@@ -133,7 +133,7 @@ const NavbarBlock: React.FC<NavbarProps> = (props) => {
                 top: targetPosition,
                 behavior: 'smooth',
               })
-            } catch (error) {
+            } catch (_error) {
               // Fallback for older browsers
               console.log('Using fallback scroll method')
               window.scrollTo(0, targetPosition)
