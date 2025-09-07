@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Icon } from '@iconify/react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Media } from '@/payload-types'
@@ -28,7 +29,6 @@ interface CrossPlatformProps {
   blockType: 'platform'
   id?: string | null
   blockName?: string | null
-  [key: string]: any
 }
 
 const CrossPlatform: React.FC<CrossPlatformProps> = ({
@@ -44,7 +44,6 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
   deviceImage,
   animationSpeed = 2,
   backgroundColor = 'gray-50',
-  ...rest
 }) => {
   const [currentPlatformIndex, setCurrentPlatformIndex] = useState(0)
 
@@ -149,11 +148,16 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
           {/* Left Column - Device Image (Bottom on Mobile, Left on Desktop) */}
           <div className="order-2 lg:order-1 relative w-full lg:w-[1000px] h-auto lg:h-full overflow-hidden flex justify-center sm:px-4">
             {imageData?.url ? (
-              <img
-                src={imageData.url}
-                alt={imageData.alt}
-                className="object-cover max-w-full h-auto lg:absolute lg:-left-20 lg:top-12"
-              />
+              <div className="relative w-full h-96 lg:absolute lg:-left-20 lg:top-12">
+                <Image
+                  src={imageData.url}
+                  alt={imageData.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 1000px"
+                  priority
+                />
+              </div>
             ) : (
               <div className="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
                 <div className="text-center">

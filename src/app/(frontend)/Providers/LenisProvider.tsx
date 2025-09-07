@@ -7,6 +7,13 @@ interface LenisProviderProps {
   children: ReactNode
 }
 
+// Extend the Window interface to include the lenis property
+declare global {
+  interface Window {
+    lenis?: Lenis
+  }
+}
+
 export default function LenisProvider({ children }: LenisProviderProps) {
   useEffect(() => {
     // Initialize Lenis
@@ -29,7 +36,7 @@ export default function LenisProvider({ children }: LenisProviderProps) {
     requestAnimationFrame(raf)
 
     // Make Lenis instance available globally (optional)
-    ;(window as any).lenis = lenis
+    window.lenis = lenis
 
     // Cleanup function
     return () => {

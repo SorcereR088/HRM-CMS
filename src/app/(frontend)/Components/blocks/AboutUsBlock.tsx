@@ -76,18 +76,6 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
     return media.alt || 'Image'
   }
 
-  const getMediaDimensions = (
-    media: Media | number | null | undefined,
-  ): { width: number; height: number } => {
-    if (!media || typeof media === 'number' || typeof media === 'string') {
-      return { width: 400, height: 400 } // Default dimensions
-    }
-    return {
-      width: media.width || 400,
-      height: media.height || 400,
-    }
-  }
-
   return (
     <section className={`${bgColorClass} relative overflow-hidden py-16 lg:py-20`}>
       <div className="max-w-8xl mx-auto px-12 sm:px-8 lg:px-[140px] grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
