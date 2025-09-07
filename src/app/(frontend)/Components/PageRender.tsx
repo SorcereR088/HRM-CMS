@@ -18,6 +18,15 @@ interface PageRendererProps {
   page: Page
 }
 
+// Helper function to safely get block properties
+const getBlockProp = <T,>(block: unknown, prop: string, fallback: T): T => {
+  if (block && typeof block === 'object' && prop in block) {
+    const value = (block as Record<string, unknown>)[prop]
+    return value !== null && value !== undefined ? (value as T) : fallback
+  }
+  return fallback
+}
+
 const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
   if (!page.content) return null
 
@@ -25,31 +34,94 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
     <div className="page-content">
       {page.content.map((block, index) => {
         try {
-          switch (block.blockType) {
+          // Safely get blockType from the block
+          const blockType = getBlockProp(block, 'blockType', '')
+
+          if (!blockType) {
+            console.warn(`Block at index ${index} has no blockType`)
+            return null
+          }
+
+          switch (blockType) {
             case 'hero':
-              return <HeroBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <HeroBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof HeroBlock>[0])}
+                />
+              )
             case 'trusted-by':
-              return <TrustedByBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <TrustedByBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof TrustedByBlock>[0])}
+                />
+              )
             case 'features':
-              return <FeaturesBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <FeaturesBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof FeaturesBlock>[0])}
+                />
+              )
             case 'highlights':
-              return <HighlightBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <HighlightBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof HighlightBlock>[0])}
+                />
+              )
             case 'testimonials':
-              return <TestimonialsBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <TestimonialsBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof TestimonialsBlock>[0])}
+                />
+              )
             case 'platform':
-              return <CrossPlatform key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <CrossPlatform
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof CrossPlatform>[0])}
+                />
+              )
             case 'form-block':
-              return <FormBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <FormBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof FormBlock>[0])}
+                />
+              )
             case 'book-demo':
-              return <BookADemoBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <BookADemoBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof BookADemoBlock>[0])}
+                />
+              )
             case 'companyInfo':
-              return <AboutUsBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <AboutUsBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof AboutUsBlock>[0])}
+                />
+              )
             case 'contact-us':
-              return <ContactUsBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <ContactUsBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof ContactUsBlock>[0])}
+                />
+              )
             case 'careers':
-              return <CareersBlock key={`${block.blockType}-${index}`} {...block} />
+              return (
+                <CareersBlock
+                  key={`${blockType}-${index}`}
+                  {...(block as Parameters<typeof CareersBlock>[0])}
+                />
+              )
             default:
-              console.warn(`Unknown block type: ${(block as any).blockType}`)
+              console.warn(`Unknown block type: ${blockType}`)
               return null
           }
         } catch (error) {
