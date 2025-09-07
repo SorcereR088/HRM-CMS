@@ -100,7 +100,9 @@ const Features: React.FC<FeaturesProps> = ({
 
       case 'lucide':
         if (feature.lucideIcon) {
-          const IconComponent = (Lucide as any)[feature.lucideIcon]
+          const IconComponent = (
+            Lucide as unknown as Record<string, React.ComponentType<{ className?: string }>>
+          )[feature.lucideIcon]
           if (IconComponent) {
             return (
               <div className={iconWrapper}>
