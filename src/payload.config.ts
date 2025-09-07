@@ -20,8 +20,18 @@ import Footer from './globals/Footer'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Define types for form submission data
+interface FormSubmissionField {
+  name?: string
+  field?: string
+  value?: string
+  data?: string
+}
+
+type FormSubmissionData = FormSubmissionField[] | Record<string, unknown>
+
 // Helper function to extract email from form submission data
-const extractEmailFromSubmission = (submissionData: any): string | null => {
+const extractEmailFromSubmission = (submissionData: FormSubmissionData): string | null => {
   if (!submissionData) return null
 
   // Handle array format
@@ -49,7 +59,7 @@ const extractEmailFromSubmission = (submissionData: any): string | null => {
     }
 
     // Fallback: find any field with @ symbol
-    for (const [key, value] of Object.entries(submissionData)) {
+    for (const [, value] of Object.entries(submissionData)) {
       if (typeof value === 'string' && value.includes('@')) {
         return value
       }
@@ -60,7 +70,7 @@ const extractEmailFromSubmission = (submissionData: any): string | null => {
 }
 
 // Helper function to extract name from form submission data
-const extractNameFromSubmission = (submissionData: any): string | null => {
+const extractNameFromSubmission = (submissionData: FormSubmissionData): string | null => {
   if (!submissionData) return null
 
   // Handle array format
@@ -91,6 +101,13 @@ const extractNameFromSubmission = (submissionData: any): string | null => {
   }
 
   return null
+}
+
+// Type for email sending results
+interface EmailResult {
+  type: 'admin' | 'confirmation'
+  success: boolean
+  error?: string
 }
 
 // Optimized transport options with connection pooling
@@ -154,7 +171,7 @@ export default buildConfig({
     // },
 
     livePreview: {
-      url: ({ data, locale }) => {
+      url: ({ data }) => {
         const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
         return `${baseUrl}/preview/${data.slug}?id=${data.id}`
       },
@@ -351,7 +368,7 @@ export default buildConfig({
                 const submitterName = extractNameFromSubmission(doc.submissionData)
 
                 // Prepare email promises for parallel execution
-                const emailPromises: Promise<any>[] = []
+                const emailPromises: Promise<EmailResult>[] = []
 
                 // 1. Admin notification email
                 const adminEmailContent = generateFormSubmissionEmail({
@@ -372,13 +389,13 @@ export default buildConfig({
                       from: process.env.MAIL_FROM_ADDRESS || 'software@vianet.com.np',
                       ...adminEmailContent,
                     })
-                    .then((result) => {
+                    .then(() => {
                       console.log('✅ Admin notification email sent')
-                      return { type: 'admin', success: true }
+                      return { type: 'admin' as const, success: true }
                     })
-                    .catch((error) => {
+                    .catch((error: Error) => {
                       console.error('❌ Admin email failed:', error.message)
-                      return { type: 'admin', success: false, error: error.message }
+                      return { type: 'admin' as const, success: false, error: error.message }
                     }),
                 )
 
@@ -405,13 +422,17 @@ export default buildConfig({
                         replyTo: process.env.MAIL_FROM_ADDRESS || 'software@vianet.com.np',
                         ...confirmationEmailContent,
                       })
-                      .then((result) => {
+                      .then(() => {
                         console.log('✅ Confirmation email sent to submitter')
-                        return { type: 'confirmation', success: true }
+                        return { type: 'confirmation' as const, success: true }
                       })
-                      .catch((error) => {
+                      .catch((error: Error) => {
                         console.error('❌ Confirmation email failed:', error.message)
-                        return { type: 'confirmation', success: false, error: error.message }
+                        return {
+                          type: 'confirmation' as const,
+                          success: false,
+                          error: error.message,
+                        }
                       }),
                   )
                 } else {
@@ -421,8 +442,9 @@ export default buildConfig({
                 // Execute all emails in parallel using the pooled connection
                 const results = await Promise.allSettled(emailPromises)
                 console.log('📊 Email sending summary:', results.length, 'emails processed')
-              } catch (error: any) {
-                console.error('❌ Email processing failed:', error.message)
+              } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+                console.error('❌ Email processing failed:', errorMessage)
               }
             },
           ],
