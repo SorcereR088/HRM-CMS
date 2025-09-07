@@ -1,10 +1,24 @@
-// Create this file as: src/templates/formSubmissionEmail.ts
+interface FormFieldData {
+  name?: string
+  field?: string
+  label?: string
+  value?: string | number | boolean
+  data?: string | number | boolean
+}
+
+type SubmissionDataValue = string | number | boolean | null | undefined
+
+interface SubmissionDataObject {
+  [key: string]: SubmissionDataValue
+}
+
+type SubmissionData = FormFieldData[] | SubmissionDataObject | null | undefined
 
 export interface FormSubmissionData {
   id: string | number
   formTitle: string
   createdAt: string
-  submissionData: any
+  submissionData: SubmissionData
   serverUrl?: string
 }
 

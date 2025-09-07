@@ -20,14 +20,37 @@ import Footer from './globals/Footer'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Define types for better type safety
+interface FormFieldData {
+  name?: string
+  field?: string
+  value?: string
+  data?: string
+}
+
+interface FormSubmissionData {
+  email?: string
+  emailAddress?: string
+  'email-address'?: string
+  Email?: string
+  text?: string
+  name?: string
+  fullName?: string
+  'full-name'?: string
+  Name?: string
+  [key: string]: unknown
+}
+
+type SubmissionDataType = FormFieldData[] | FormSubmissionData | unknown
+
 // Helper function to extract email from form submission data
-const extractEmailFromSubmission = (submissionData: any): string | null => {
+const extractEmailFromSubmission = (submissionData: SubmissionDataType): string | null => {
   if (!submissionData) return null
 
   // Handle array format
   if (Array.isArray(submissionData)) {
     const emailField = submissionData.find(
-      (field) =>
+      (field: FormFieldData) =>
         field?.name === 'email' ||
         field?.field === 'email' ||
         (typeof field?.value === 'string' && field.value.includes('@')),
@@ -36,20 +59,18 @@ const extractEmailFromSubmission = (submissionData: any): string | null => {
   }
 
   // Handle object format
-  if (typeof submissionData === 'object') {
+  if (typeof submissionData === 'object' && submissionData !== null) {
+    const data = submissionData as FormSubmissionData
+
     // Check for common email field names
-    const emailValue =
-      submissionData.email ||
-      submissionData.emailAddress ||
-      submissionData['email-address'] ||
-      submissionData.Email
+    const emailValue = data.email || data.emailAddress || data['email-address'] || data.Email
 
     if (emailValue && typeof emailValue === 'string' && emailValue.includes('@')) {
       return emailValue
     }
 
     // Fallback: find any field with @ symbol
-    for (const [key, value] of Object.entries(submissionData)) {
+    for (const [_key, value] of Object.entries(data)) {
       if (typeof value === 'string' && value.includes('@')) {
         return value
       }
@@ -60,13 +81,13 @@ const extractEmailFromSubmission = (submissionData: any): string | null => {
 }
 
 // Helper function to extract name from form submission data
-const extractNameFromSubmission = (submissionData: any): string | null => {
+const extractNameFromSubmission = (submissionData: SubmissionDataType): string | null => {
   if (!submissionData) return null
 
   // Handle array format
   if (Array.isArray(submissionData)) {
     const nameField = submissionData.find(
-      (field) =>
+      (field: FormFieldData) =>
         field?.name === 'text' ||
         field?.name === 'name' ||
         field?.name === 'fullName' ||
@@ -77,13 +98,10 @@ const extractNameFromSubmission = (submissionData: any): string | null => {
   }
 
   // Handle object format
-  if (typeof submissionData === 'object') {
-    const nameValue =
-      submissionData.text ||
-      submissionData.name ||
-      submissionData.fullName ||
-      submissionData['full-name'] ||
-      submissionData.Name
+  if (typeof submissionData === 'object' && submissionData !== null) {
+    const data = submissionData as FormSubmissionData
+
+    const nameValue = data.text || data.name || data.fullName || data['full-name'] || data.Name
 
     if (nameValue && typeof nameValue === 'string') {
       return nameValue
@@ -154,7 +172,7 @@ export default buildConfig({
     // },
 
     livePreview: {
-      url: ({ data, locale }) => {
+      url: ({ data }) => {
         const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
         return `${baseUrl}/preview/${data.slug}?id=${data.id}`
       },
@@ -351,7 +369,8 @@ export default buildConfig({
                 const submitterName = extractNameFromSubmission(doc.submissionData)
 
                 // Prepare email promises for parallel execution
-                const emailPromises: Promise<any>[] = []
+                const emailPromises: Promise<{ type: string; success: boolean; error?: string }>[] =
+                  []
 
                 // 1. Admin notification email
                 const adminEmailContent = generateFormSubmissionEmail({
@@ -372,11 +391,11 @@ export default buildConfig({
                       from: process.env.MAIL_FROM_ADDRESS || 'software@vianet.com.np',
                       ...adminEmailContent,
                     })
-                    .then((result) => {
+                    .then(() => {
                       console.log('✅ Admin notification email sent')
                       return { type: 'admin', success: true }
                     })
-                    .catch((error) => {
+                    .catch((error: Error) => {
                       console.error('❌ Admin email failed:', error.message)
                       return { type: 'admin', success: false, error: error.message }
                     }),
@@ -405,11 +424,11 @@ export default buildConfig({
                         replyTo: process.env.MAIL_FROM_ADDRESS || 'software@vianet.com.np',
                         ...confirmationEmailContent,
                       })
-                      .then((result) => {
+                      .then(() => {
                         console.log('✅ Confirmation email sent to submitter')
                         return { type: 'confirmation', success: true }
                       })
-                      .catch((error) => {
+                      .catch((error: Error) => {
                         console.error('❌ Confirmation email failed:', error.message)
                         return { type: 'confirmation', success: false, error: error.message }
                       }),
@@ -421,8 +440,9 @@ export default buildConfig({
                 // Execute all emails in parallel using the pooled connection
                 const results = await Promise.allSettled(emailPromises)
                 console.log('📊 Email sending summary:', results.length, 'emails processed')
-              } catch (error: any) {
-                console.error('❌ Email processing failed:', error.message)
+              } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+                console.error('❌ Email processing failed:', errorMessage)
               }
             },
           ],
