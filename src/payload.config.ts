@@ -149,27 +149,6 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
 
-    // meta: {
-    //   icons: [
-    //     {
-    //       rel: 'icon',
-    //       type: 'image/png',
-    //       // Use /media/ path for files uploaded to Payload Media collection
-    //       url: '/media/favicon.png',
-    //     },
-    //     // Alternative formats if you have them
-    //     // {
-    //     //   rel: 'icon',
-    //     //   type: 'image/x-icon',
-    //     //   url: '/media/your-favicon-filename.ico',
-    //     // },
-    //     // {
-    //     //   rel: 'apple-touch-icon',
-    //     //   url: '/media/your-favicon-filename.png',
-    //     // },
-    //   ],
-    // },
-
     livePreview: {
       url: ({ data }) => {
         const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'

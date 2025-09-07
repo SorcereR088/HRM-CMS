@@ -38,6 +38,14 @@ async function getFooter(): Promise<Footer | null> {
 
 export const metadata = {
   title: 'YAK HRM',
+  icons: {
+    icon: [
+      { url: '/api/media/file/favicon.ico', sizes: 'any' },
+      { url: '/api/media/file/icon0.svg', type: 'image/svg+xml' },
+      { url: '/api/media/file/icon1.png', type: 'image/png' },
+    ],
+    apple: '/api/media/file/apple-icon.png',
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
