@@ -28,7 +28,21 @@ const getBlockProp = <T,>(block: unknown, prop: string, fallback: T): T => {
 }
 
 const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
-  if (!page.content) return null
+  // Add more comprehensive null checks
+  if (!page) {
+    console.warn('PageRenderer: page is null or undefined')
+    return null
+  }
+
+  if (!page.content) {
+    console.warn('PageRenderer: page.content is null or undefined')
+    return null
+  }
+
+  if (!Array.isArray(page.content)) {
+    console.warn('PageRenderer: page.content is not an array')
+    return null
+  }
 
   return (
     <div className="page-content">

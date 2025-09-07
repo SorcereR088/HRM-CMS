@@ -4,6 +4,13 @@ import { NextRequest } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 
+// Define a custom error interface for better type safety
+interface APIError {
+  message: string
+  code?: string
+  statusCode?: number
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string[] }> },
@@ -12,6 +19,11 @@ export async function GET(
     const payload = await getPayload({ config: configPromise })
     const resolvedParams = await params
     const filename = resolvedParams.slug.join('/')
+
+    // Validate filename to prevent path traversal
+    if (filename.includes('..') || filename.includes('\\')) {
+      return new Response('Invalid filename', { status: 400 })
+    }
 
     // Find the media file by filename
     const mediaFiles = await payload.find({
@@ -38,6 +50,7 @@ export async function GET(
         headers: {
           'Content-Type': file.mimeType || 'application/octet-stream',
           'Cache-Control': 'public, max-age=31536000',
+          'Content-Length': fileBuffer.length.toString(),
         },
       })
     }
@@ -51,13 +64,39 @@ export async function GET(
         headers: {
           'Content-Type': file.mimeType || 'application/octet-stream',
           'Cache-Control': 'public, max-age=31536000',
+          'Content-Length': fileBuffer.length.toString(),
         },
       })
     }
 
     return new Response('Physical file not found', { status: 404 })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Media API error:', error)
-    return new Response(`Internal server error: ${error.message}`, { status: 500 })
+
+    // Enhanced error handling with type safety
+    let errorMessage = 'Unknown error occurred'
+    let statusCode = 500
+
+    if (error instanceof Error) {
+      errorMessage = error.message
+
+      // Handle specific error types
+      if (error.name === 'ENOENT') {
+        errorMessage = 'File system error: File not found'
+        statusCode = 404
+      } else if (error.name === 'EACCES') {
+        errorMessage = 'File system error: Permission denied'
+        statusCode = 403
+      }
+    } else if (typeof error === 'string') {
+      errorMessage = error
+    } else if (error && typeof error === 'object') {
+      // Handle API errors with custom structure
+      const apiError = error as APIError
+      errorMessage = apiError.message || 'API error occurred'
+      statusCode = apiError.statusCode || 500
+    }
+
+    return new Response(`Internal server error: ${errorMessage}`, { status: statusCode })
   }
 }

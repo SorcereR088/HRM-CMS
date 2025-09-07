@@ -154,7 +154,7 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                   alt={imageData.alt}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 1000px"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 1200px"
                   priority
                 />
               </div>
