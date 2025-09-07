@@ -10,7 +10,7 @@ import Form from '../blocks/Form'
 import BookADemo from '../blocks/BookADemo'
 import AboutUs from '@/blocks/AboutUs'
 import ContactUs from '@/blocks/ContactUs'
-import { Contact } from 'lucide-react'
+import Careers from '@/blocks/Careers'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -90,6 +90,7 @@ const Pages: CollectionConfig = {
         Form,
         AboutUs,
         ContactUs,
+        Careers,
       ],
     },
     {

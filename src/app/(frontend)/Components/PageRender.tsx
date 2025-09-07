@@ -12,6 +12,7 @@ import FormBlock from '../Components/blocks/FormBlock'
 import BookADemoBlock from '../Components/blocks/BookADemoBlock'
 import AboutUsBlock from '../Components/blocks/AboutUsBlock'
 import ContactUsBlock from '../Components/blocks/ContactUsBlock'
+import CareersBlock from './blocks/CareersBlock'
 
 interface PageRendererProps {
   page: Page
@@ -45,6 +46,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ page }) => {
               return <AboutUsBlock key={`${block.blockType}-${index}`} {...block} />
             case 'contact-us':
               return <ContactUsBlock key={`${block.blockType}-${index}`} {...block} />
+            case 'careers':
+              return <CareersBlock key={`${block.blockType}-${index}`} {...block} />
             default:
               console.warn(`Unknown block type: ${(block as any).blockType}`)
               return null

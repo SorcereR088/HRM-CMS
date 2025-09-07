@@ -445,6 +445,66 @@ export interface Page {
         blockName?: string | null;
         blockType: 'contact-us';
       }
+    | {
+        heading: string;
+        description?: string | null;
+        contactInfo?: {
+          label?: string | null;
+          email?: string | null;
+        };
+        jobListings?:
+          | {
+              category: string;
+              title: string;
+              jobType: 'full-time' | 'part-time' | 'contract' | 'internship' | 'remote';
+              salaryRange?: string | null;
+              location?: string | null;
+              /**
+               * URL to the job application form page
+               */
+              applicationFormUrl?: string | null;
+              /**
+               * Detailed job description (optional)
+               */
+              jobDescription?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: string;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              requirements?:
+                | {
+                    requirement?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              benefits?:
+                | {
+                    benefit: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        ctaButton: {
+          text: string;
+          style: 'primary' | 'secondary' | 'outline';
+        };
+        backgroundColor?: ('white' | 'gray-50' | 'blue-50') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'careers';
+      }
   )[];
   status?: ('draft' | 'published') | null;
   updatedAt: string;
@@ -984,6 +1044,51 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               formHeading?: T;
               form?: T;
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        careers?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              contactInfo?:
+                | T
+                | {
+                    label?: T;
+                    email?: T;
+                  };
+              jobListings?:
+                | T
+                | {
+                    category?: T;
+                    title?: T;
+                    jobType?: T;
+                    salaryRange?: T;
+                    location?: T;
+                    applicationFormUrl?: T;
+                    jobDescription?: T;
+                    requirements?:
+                      | T
+                      | {
+                          requirement?: T;
+                          id?: T;
+                        };
+                    benefits?:
+                      | T
+                      | {
+                          benefit?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              ctaButton?:
+                | T
+                | {
+                    text?: T;
+                    style?: T;
+                  };
               backgroundColor?: T;
               id?: T;
               blockName?: T;
