@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { Media } from '@/payload-types'
 
@@ -27,7 +28,7 @@ interface CompanyInfoBlockProps {
   blockType: 'companyInfo'
   id?: string | null
   blockName?: string | null
-  [key: string]: any
+  [key: string]: unknown
 }
 
 const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
@@ -75,6 +76,18 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
     return media.alt || 'Image'
   }
 
+  const getMediaDimensions = (
+    media: Media | number | null | undefined,
+  ): { width: number; height: number } => {
+    if (!media || typeof media === 'number' || typeof media === 'string') {
+      return { width: 400, height: 400 } // Default dimensions
+    }
+    return {
+      width: media.width || 400,
+      height: media.height || 400,
+    }
+  }
+
   return (
     <section className={`${bgColorClass} relative overflow-hidden py-16 lg:py-20`}>
       <div className="max-w-8xl mx-auto px-12 sm:px-8 lg:px-[140px] grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
@@ -83,11 +96,15 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
           {/* Logo or Company Name */}
           <div className="mb-8">
             {logo && getMediaUrl(logo) ? (
-              <img
-                src={getMediaUrl(logo) || ''}
-                alt={getMediaAlt(logo)}
-                className="h-12 sm:h-14 lg:h-24 w-auto object-contain"
-              />
+              <div className="h-12 sm:h-14 lg:h-24 relative">
+                <Image
+                  src={getMediaUrl(logo) || ''}
+                  alt={getMediaAlt(logo)}
+                  fill
+                  className="object-contain object-left"
+                  sizes="(max-width: 640px) 200px, (max-width: 1024px) 280px, 384px"
+                />
+              </div>
             ) : companyName ? (
               companyName.includes('CODE BRIGHT') ? (
                 <div>
@@ -135,11 +152,14 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
         {/* Right Illustration */}
         {illustration && getMediaUrl(illustration) && (
           <div className="flex items-center justify-center lg:justify-end">
-            <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[420px] lg:h-[420px] xl:w-[480px] xl:h-[480px]">
-              <img
+            <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[420px] lg:h-[420px] xl:w-[480px] xl:h-[480px] relative">
+              <Image
                 src={getMediaUrl(illustration) || ''}
                 alt={getMediaAlt(illustration)}
-                className="w-full h-full object-contain animate-float"
+                fill
+                className="object-contain animate-float"
+                sizes="(max-width: 640px) 320px, (max-width: 768px) 384px, (max-width: 1024px) 420px, 480px"
+                priority
               />
             </div>
           </div>

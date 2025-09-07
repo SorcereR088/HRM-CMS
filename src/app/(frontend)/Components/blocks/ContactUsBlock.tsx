@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Media, Form } from '@/payload-types'
 import FormRenderer from '../FormRenderer'
 import { Icon } from '@iconify/react'
+import { LucideProps } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 
 // Contact item interface for icon logic
@@ -68,7 +69,7 @@ const renderIcon = (item: ContactItem) => {
     case 'url':
       if (item.iconUrl) {
         return (
-          <img
+          <Image
             src={item.iconUrl}
             alt={item.label + ' icon'}
             width={iconSize}
@@ -81,8 +82,9 @@ const renderIcon = (item: ContactItem) => {
 
     case 'lucide':
       if (item.lucideIcon) {
-        const IconComponent = (LucideIcons as any)[item.lucideIcon]
-        if (IconComponent) {
+        const iconKey = item.lucideIcon as keyof typeof LucideIcons
+        const IconComponent = LucideIcons[iconKey] as React.ComponentType<LucideProps>
+        if (IconComponent && typeof IconComponent === 'function') {
           return (
             <span className="inline-block mr-3 text-gray-900">
               <IconComponent size={iconSize} />
@@ -111,6 +113,8 @@ const renderIcon = (item: ContactItem) => {
       return null
   }
 }
+
+// ... rest of the component remains the same
 
 const ContactUsBlock: React.FC<ContactUsBlockProps> = ({
   heading = 'Get in touch with us',
@@ -147,7 +151,7 @@ const ContactUsBlock: React.FC<ContactUsBlockProps> = ({
       } else {
         setError(`Failed to load form`)
       }
-    } catch (err) {
+    } catch (_error) {
       setError(`Unable to load form`)
     } finally {
       setLoading(false)

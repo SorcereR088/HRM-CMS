@@ -28,13 +28,53 @@ interface RequestBody {
   submissionData: SubmissionData
 }
 
+interface EmailConfig {
+  emailTo?: string
+  cc?: string
+  bcc?: string
+  replyTo?: string
+  emailFrom?: string
+  subject?: string
+  message?: RichTextContent | string
+}
+
+interface RichTextContent {
+  root?: {
+    children?: Array<{
+      text?: string
+      children?: Array<{ text?: string }>
+    }>
+  }
+}
+
+interface FormSubmission {
+  id: string | number
+  form: string | number
+  createdAt: string
+  submissionData?: unknown
+}
+
+interface PayloadInstance {
+  sendEmail: (config: {
+    to: string | string[]
+    cc?: string[]
+    bcc?: string[]
+    replyTo?: string
+    from: string
+    subject: string
+    html: string
+  }) => Promise<unknown>
+  findByID: (config: { collection: string; id: string; depth?: number }) => Promise<unknown>
+  create: (config: { collection: string; data: unknown }) => Promise<FormSubmission>
+}
+
 // Helper function to send form notification emails
 async function sendFormNotificationEmails(
-  payload: any,
+  payload: PayloadInstance,
   formData: Form,
-  submission: any,
+  submission: FormSubmission,
   dynamicFields: DynamicField[],
-  submissionSummary: string
+  submissionSummary: string,
 ) {
   try {
     // Check if the form has email configurations
@@ -43,30 +83,45 @@ async function sendFormNotificationEmails(
       return
     }
 
-    console.log('Processing email configurations for form:', formData.id, 'Count:', formData.emails.length)
+    console.log(
+      'Processing email configurations for form:',
+      formData.id,
+      'Count:',
+      formData.emails.length,
+    )
 
     // Process each email configuration
-    for (const emailConfig of formData.emails) {
+    for (const emailConfig of formData.emails as EmailConfig[]) {
       try {
         // Parse email recipients
         const emailTo = emailConfig.emailTo || ''
         const cc = emailConfig.cc || ''
         const bcc = emailConfig.bcc || ''
         const replyTo = emailConfig.replyTo || ''
-        const emailFrom = emailConfig.emailFrom || process.env.MAIL_FROM_ADDRESS || 'sofware@vianet.com.np'
-        
+        const emailFrom =
+          emailConfig.emailFrom || process.env.MAIL_FROM_ADDRESS || 'sofware@vianet.com.np'
+
         if (!emailTo) {
           console.log('Skipping email config - no recipient specified')
           continue
         }
 
         // Process email subject and message with dynamic field replacement
-        const subject = replacePlaceholders(emailConfig.subject || 'New Form Submission', dynamicFields)
+        const subject = replacePlaceholders(
+          emailConfig.subject || 'New Form Submission',
+          dynamicFields,
+        )
         const messageText = emailConfig.message ? extractTextFromRichText(emailConfig.message) : ''
         const processedMessage = replacePlaceholders(messageText, dynamicFields)
 
         // Create HTML email content
-        const htmlContent = createEmailHTML(formData, dynamicFields, submissionSummary, processedMessage, submission)
+        const htmlContent = createEmailHTML(
+          formData,
+          dynamicFields,
+          submissionSummary,
+          processedMessage,
+          submission,
+        )
 
         console.log('Sending email to:', emailTo)
 
@@ -100,7 +155,7 @@ function replacePlaceholders(text: string, dynamicFields: DynamicField[]): strin
   // Replace {{*}} with all form data
   if (result.includes('{{*}}')) {
     const allFieldsText = dynamicFields
-      .map(field => `${field.fieldLabel}: ${field.fieldValue}`)
+      .map((field) => `${field.fieldLabel}: ${field.fieldValue}`)
       .join('\n')
     result = result.replace(/\{\{\*\}\}/g, allFieldsText)
   }
@@ -116,12 +171,16 @@ function replacePlaceholders(text: string, dynamicFields: DynamicField[]): strin
           </tr>
         </thead>
         <tbody>
-          ${dynamicFields.map(field => `
+          ${dynamicFields
+            .map(
+              (field) => `
             <tr>
               <td style="border: 1px solid #ddd; padding: 12px;"><strong>${field.fieldLabel}</strong></td>
               <td style="border: 1px solid #ddd; padding: 12px;">${field.fieldValue}</td>
             </tr>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </tbody>
       </table>
     `
@@ -129,7 +188,7 @@ function replacePlaceholders(text: string, dynamicFields: DynamicField[]): strin
   }
 
   // Replace individual field placeholders {{fieldName}}
-  dynamicFields.forEach(field => {
+  dynamicFields.forEach((field) => {
     const placeholder = new RegExp(`\\{\\{${field.fieldName}\\}\\}`, 'g')
     result = result.replace(placeholder, field.fieldValue)
   })
@@ -138,17 +197,17 @@ function replacePlaceholders(text: string, dynamicFields: DynamicField[]): strin
 }
 
 // Helper function to extract text from rich text content
-function extractTextFromRichText(richText: any): string {
+function extractTextFromRichText(richText: RichTextContent | string): string {
   if (typeof richText === 'string') {
     return richText
   }
 
   if (richText && richText.root && richText.root.children) {
     return richText.root.children
-      .map((child: any) => {
+      .map((child) => {
         if (child.text) return child.text
         if (child.children) {
-          return child.children.map((grandchild: any) => grandchild.text || '').join('')
+          return child.children.map((grandchild) => grandchild.text || '').join('')
         }
         return ''
       })
@@ -164,7 +223,7 @@ function createEmailHTML(
   dynamicFields: DynamicField[],
   submissionSummary: string,
   customMessage: string,
-  submission: any
+  submission: FormSubmission,
 ): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -174,12 +233,16 @@ function createEmailHTML(
       </div>
       
       <div style="background: white; padding: 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px;">
-        ${customMessage ? `
+        ${
+          customMessage
+            ? `
           <div style="background: #f8f9fa; padding: 20px; border-left: 4px solid #667eea; margin-bottom: 30px; border-radius: 0 5px 5px 0;">
             <h3 style="margin: 0 0 10px 0; color: #333;">Message</h3>
             <div style="color: #555; line-height: 1.6;">${customMessage.replace(/\n/g, '<br>')}</div>
           </div>
-        ` : ''}
+        `
+            : ''
+        }
         
         <h3 style="color: #333; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">Submitted Information</h3>
         
@@ -191,12 +254,16 @@ function createEmailHTML(
             </tr>
           </thead>
           <tbody>
-            ${dynamicFields.map(field => `
+            ${dynamicFields
+              .map(
+                (field) => `
               <tr style="border-bottom: 1px solid #f0f0f0;">
                 <td style="border: 1px solid #e0e0e0; padding: 15px; background: #fafafa; font-weight: 500; color: #495057;">${field.fieldLabel}</td>
                 <td style="border: 1px solid #e0e0e0; padding: 15px; color: #212529;">${field.fieldValue || '<em>Not provided</em>'}</td>
               </tr>
-            `).join('')}
+            `,
+              )
+              .join('')}
           </tbody>
         </table>
         
@@ -221,7 +288,7 @@ function createEmailHTML(
 
 export async function POST(request: NextRequest) {
   try {
-    const payload = await getPayload({ config })
+    const payload = (await getPayload({ config })) as PayloadInstance
 
     let requestData: RequestBody
     try {
@@ -277,7 +344,7 @@ export async function POST(request: NextRequest) {
     const fieldDefinitions: Record<string, { label: string; type: string; required: boolean }> = {}
 
     if (formData.fields && Array.isArray(formData.fields)) {
-      formData.fields.forEach((field: any) => {
+      formData.fields.forEach((field: unknown) => {
         const formField = field as FormField
         if (formField.name) {
           fieldDefinitions[formField.name] = {
@@ -360,7 +427,13 @@ export async function POST(request: NextRequest) {
       })
 
       // Send email notifications if configured for this form
-      await sendFormNotificationEmails(payload, formData, submission, dynamicFields, submissionSummary)
+      await sendFormNotificationEmails(
+        payload,
+        formData,
+        submission,
+        dynamicFields,
+        submissionSummary,
+      )
 
       return NextResponse.json(
         {

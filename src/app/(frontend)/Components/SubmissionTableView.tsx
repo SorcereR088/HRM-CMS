@@ -1,6 +1,5 @@
 // components/SubmissionTableView.tsx
 import React from 'react'
-import { useDocumentInfo, useAuth } from '@payloadcms/ui'
 
 interface DynamicField {
   fieldName: string
@@ -14,6 +13,13 @@ interface SubmissionData {
   value: string
 }
 
+interface FormField {
+  name?: string
+  label?: string
+  type?: string
+  required?: boolean
+}
+
 interface FormSubmission {
   id: string
   dynamicFields?: DynamicField[]
@@ -21,12 +27,17 @@ interface FormSubmission {
   form?: {
     title?: string
     id?: string
-    fields?: any[]
+    fields?: FormField[]
   }
   createdAt?: string
   submissionSummary?: string
   ipAddress?: string
   userAgent?: string
+}
+
+interface ParsedFieldData {
+  value: string
+  type: string
 }
 
 // This component will replace the entire collection list view
@@ -71,8 +82,8 @@ const FormSubmissionsTableView: React.FC = () => {
   }, [])
 
   // Parse form data from different possible structures
-  const parseSubmissionData = (submission: FormSubmission) => {
-    const fields: { [key: string]: any } = {}
+  const parseSubmissionData = (submission: FormSubmission): Record<string, ParsedFieldData> => {
+    const fields: Record<string, ParsedFieldData> = {}
 
     // Try dynamicFields first (your custom structure)
     if (submission.dynamicFields?.length) {
@@ -147,7 +158,7 @@ const FormSubmissionsTableView: React.FC = () => {
       } else {
         alert('Failed to delete submission')
       }
-    } catch (err) {
+    } catch (_err) {
       alert('Error deleting submission')
     }
   }

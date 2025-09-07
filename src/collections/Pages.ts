@@ -114,7 +114,7 @@ const Pages: CollectionConfig = {
   ],
   hooks: {
     afterChange: [
-      ({ doc, req, operation }) => {
+      ({ doc, operation }) => {
         console.log(`Page "${doc.title}" was ${operation}d`)
       },
     ],
