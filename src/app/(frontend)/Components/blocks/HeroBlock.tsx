@@ -1,5 +1,8 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
+import TextAmination from '../animation/TextAnimation'
 import { Media } from '@/payload-types'
 
 interface HeroBlockProps {
@@ -19,13 +22,17 @@ const HeroBlock: React.FC<HeroBlockProps> = ({ title, subtitle, backgroundImage 
   return (
     <section className="w-full min-h-[80vh] lg:h-[80vh] flex flex-col items-center px-4 sm:px-6 lg:px-6 py-8 sm:py-12 lg:py-20 text-center bg-gradient-to-b from-white to-teal-100 overflow-hidden relative">
       <div className="max-w-4xl z-10 mb-4 sm:mb-6 lg:mb-0">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4 leading-tight px-2">
-          {title}
-        </h1>
+        <TextAmination>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4 leading-tight px-2">
+            {title}
+          </h1>
+        </TextAmination>
         {subtitle && (
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 mb-2 sm:mb-4 lg:mb-6 leading-relaxed px-2">
-            {subtitle}
-          </p>
+          <TextAmination delay={0.3}>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 mb-2 sm:mb-4 lg:mb-6 leading-relaxed px-2">
+              {subtitle}
+            </p>
+          </TextAmination>
         )}
       </div>
 

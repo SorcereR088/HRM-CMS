@@ -4,7 +4,7 @@ import React from 'react'
 import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { Media } from '@/payload-types'
-
+import TextAnimation from '../animation/TextAnimation'
 interface StatItem {
   value: string
   label: string
@@ -82,58 +82,69 @@ const CompanyInfoBlock: React.FC<CompanyInfoBlockProps> = ({
         {/* Left Content */}
         <div className="space-y-6">
           {/* Logo or Company Name */}
-          <div className="mb-8">
-            {logo && getMediaUrl(logo) ? (
-              <div className="h-12 sm:h-14 lg:h-24 relative">
-                <Image
-                  src={getMediaUrl(logo) || ''}
-                  alt={getMediaAlt(logo)}
-                  fill
-                  className="object-contain object-left"
-                  sizes="(max-width: 640px) 200px, (max-width: 1024px) 280px, 384px"
-                />
-              </div>
-            ) : companyName ? (
-              companyName.includes('CODE BRIGHT') ? (
-                <div>
-                  <div className="text-base sm:text-lg font-semibold tracking-wide">
-                    <span className="text-gray-700">CODE</span>
-                  </div>
-                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-                    <span className="text-yellow-500">BRIGHT</span>
-                  </div>
+          <TextAnimation>
+            <div className="mb-8">
+              {logo && getMediaUrl(logo) ? (
+                <div className="h-12 sm:h-14 lg:h-24 relative">
+                  <Image
+                    src={getMediaUrl(logo) || ''}
+                    alt={getMediaAlt(logo)}
+                    fill
+                    className="object-contain object-left"
+                    sizes="(max-width: 640px) 200px, (max-width: 1024px) 280px, 384px"
+                  />
                 </div>
+              ) : companyName ? (
+                companyName.includes('CODE BRIGHT') ? (
+                  <div>
+                    <div className="text-base sm:text-lg font-semibold tracking-wide">
+                      <span className="text-gray-700">CODE</span>
+                    </div>
+                    <div className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+                      <span className="text-yellow-500">BRIGHT</span>
+                    </div>
+                  </div>
+                ) : (
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">
+                    {companyName}
+                  </h1>
+                )
               ) : (
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">
-                  {companyName}
-                </h1>
-              )
-            ) : (
-              <div className="h-12 sm:h-14 lg:h-16 w-32 sm:w-36 lg:w-40 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs sm:text-sm">
-                No Logo Provided
-              </div>
-            )}
-          </div>
+                <div className="h-12 sm:h-14 lg:h-16 w-32 sm:w-36 lg:w-40 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs sm:text-sm">
+                  No Logo Provided
+                </div>
+              )}
+            </div>
+          </TextAnimation>
 
           {/* Tagline */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 leading-tight mb-8">
-            {tagline}
-          </h2>
+          <TextAnimation delay={0.2}>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 leading-tight mb-8">
+              {tagline}
+            </h2>
+          </TextAnimation>
 
           {/* Description */}
-          <p className="text-lg text-gray-600 leading-relaxed mb-8">{description}</p>
+          <TextAnimation delay={0.4}>
+            <p className="text-lg text-gray-600 leading-relaxed mb-8">{description}</p>
+          </TextAnimation>
 
           {/* CTA Button */}
           {ctaButton?.text && (
-            <div className="pt-2">
-              <a
-                href={ctaButton.url || '#'}
-                className="inline-flex items-center gap-2 text-gray-900 font-semibold text-base sm:text-lg hover:text-teal-600 hover:underline transition-colors group"
-              >
-                {ctaButton.text}
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </a>
-            </div>
+            <TextAnimation delay={0.6}>
+              <div className="pt-2">
+                <a
+                  href={ctaButton.url || '#'}
+                  className="inline-flex items-center gap-2 text-gray-900 font-semibold text-base sm:text-lg hover:text-teal-600 hover:underline transition-colors group"
+                >
+                  {ctaButton.text}
+                  <ArrowRight
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </a>
+              </div>
+            </TextAnimation>
           )}
         </div>
 

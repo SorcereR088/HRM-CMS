@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Features from '../Features'
+import TextAmination from '../animation/TextAnimation'
 import { Media } from '@/payload-types'
 
 interface FeatureItem {
@@ -49,24 +50,27 @@ const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left Side - Heading and Subheading */}
           <div className="lg:sticky lg:top-80 max-w-xl">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
-              {heading}
-            </h2>
+            <TextAmination>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
+                {heading}
+              </h2>
+            </TextAmination>
             {subheading && (
-              <p className="text-base sm:text-lg text-gray-600 leading-relaxed">{subheading}</p>
+              <TextAmination delay={0.2}>
+                <p className="text-base sm:text-lg text-gray-600 leading-relaxed">{subheading}</p>
+              </TextAmination>
             )}
           </div>
 
           {/* Right Side - Features List */}
-          <div>
-            <Features
-              features={features}
-              layout="vertical"
-              iconSize="md"
-              spacing="loose"
-              showEmptyState={true}
-            />
-          </div>
+
+          <Features
+            features={features}
+            layout="vertical"
+            iconSize="md"
+            spacing="loose"
+            showEmptyState={true}
+          />
         </div>
       </div>
     </section>

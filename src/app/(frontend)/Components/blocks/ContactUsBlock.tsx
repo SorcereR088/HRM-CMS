@@ -7,6 +7,7 @@ import FormRenderer from '../FormRenderer'
 import { Icon } from '@iconify/react'
 import { LucideProps } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
+import TextAnimation from '../animation/TextAnimation'
 
 // Contact item interface for icon logic
 interface ContactItem {
@@ -169,24 +170,30 @@ const ContactUsBlock: React.FC<ContactUsBlockProps> = ({
         {/* Left Column - Contact Info */}
         <div className="flex flex-col justify-start">
           {heading && (
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-6 leading-tight max-w-2xl">
-              {heading}
-            </h2>
+            <TextAnimation>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-6 leading-tight max-w-2xl">
+                {heading}
+              </h2>
+            </TextAnimation>
           )}
-          {description && (
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">{description}</p>
-          )}
+          <TextAnimation delay={0.2}>
+            {description && (
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">{description}</p>
+            )}
+          </TextAnimation>
           <div className="space-y-7">
             {contactInfo &&
               contactInfo.length > 0 &&
               contactInfo.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2">
-                  {renderIcon(item)}
-                  <div>
-                    <div className="font-medium text-gray-800">{item.label}</div>
-                    <div className="text-gray-700">{item.value}</div>
+                <TextAnimation key={idx} delay={0.3 + idx * 0.1}>
+                  <div key={idx} className="flex items-center gap-2">
+                    {renderIcon(item)}
+                    <div>
+                      <div className="font-medium text-gray-800">{item.label}</div>
+                      <div className="text-gray-700">{item.value}</div>
+                    </div>
                   </div>
-                </div>
+                </TextAnimation>
               ))}
           </div>
         </div>

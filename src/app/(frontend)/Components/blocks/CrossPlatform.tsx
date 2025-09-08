@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Icon } from '@iconify/react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence, useInView } from 'motion/react'
 import { Media } from '@/payload-types'
+import { useRef } from 'react'
 
 interface AnimatedPlatform {
   platform: string
@@ -46,6 +47,8 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
   backgroundColor = 'gray-50',
 }) => {
   const [currentPlatformIndex, setCurrentPlatformIndex] = useState(0)
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-100px 0px' })
 
   const bgColorClass = {
     white: 'bg-white',
@@ -87,13 +90,24 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
   const currentPlatform = platforms[currentPlatformIndex]?.platform || 'Web'
 
   return (
-    <section className={`${bgColorClass}`}>
+    <section className={`${bgColorClass}`} ref={ref}>
       <div className="">
         <div className="flex flex-wrap lg:flex-nowrap items-center gap-12 justify-center lg:justify-start w-full h-auto lg:h-[80vh]">
           {/* Right Column - Content (Top on Mobile, Right on Desktop) */}
           <div className="order-1 lg:order-2 text-center lg:text-left w-full lg:w-auto pt-12 lg:pt-0">
-            <div className="mb-6">
-              <h2 className="text-5xl font-bold text-gray-900 mb-4">{heading}</h2>
+            <motion.div
+              className="mb-6"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.8, ease: [0.25, 0.25, 0, 1] }}
+            >
+              <motion.h2
+                className="text-5xl font-bold text-gray-900 mb-4"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
+                {heading}
+              </motion.h2>
               <div className="text-5xl font-bold text-gray-900 flex items-center gap-4 justify-center lg:justify-start">
                 <div className="inline-block relative">
                   <div className="inline-block relative">
@@ -104,7 +118,11 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                       transition={{
                         type: 'spring',
                         stiffness: 200,
-                        damping: 10, // lower damping = more bounce
+                        damping: 10,
+                      }}
+                      whileHover={{
+                        scale: 1.05,
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
                       }}
                     >
                       <AnimatePresence mode="wait" initial={false}>
@@ -122,50 +140,144 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                     </motion.div>
                   </div>
                 </div>{' '}
-                {subheading}
+                <motion.span
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                  transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.25, 0, 1] }}
+                >
+                  {subheading}
+                </motion.span>
               </div>
-            </div>
+            </motion.div>
 
             {icons.length > 0 && (
-              <div className="flex items-center space-x-6 mt-20 mb-8 justify-center lg:justify-start">
+              <motion.div
+                className="flex items-center space-x-6 mt-20 mb-8 justify-center lg:justify-start"
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.25, 0, 1] }}
+              >
                 {icons.map((icon, index) => (
-                  <div key={icon.id || index} className="flex flex-col items-center ">
-                    <div className="flex items-center justify-center bg-white rounded-2xl">
+                  <motion.div
+                    key={icon.id || index}
+                    className="flex flex-col items-center"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.6 + index * 0.1,
+                      type: 'spring',
+                      stiffness: 200,
+                    }}
+                    whileHover={{
+                      scale: 1.1,
+                      y: -5,
+                      transition: { duration: 0.2 },
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className="flex items-center justify-center bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
                       <Icon icon={icon.iconName} className="w-10 h-10" />
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
 
             {description && (
-              <p className="text-md text-gray-600 mb-8 leading-tight max-w-lg mx-auto lg:mx-0">
+              <motion.p
+                className="text-md text-gray-600 mb-8 leading-tight max-w-lg mx-auto lg:mx-0"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: 0.8, ease: [0.25, 0.25, 0, 1] }}
+              >
                 {description}
-              </p>
+              </motion.p>
             )}
           </div>
 
           {/* Left Column - Device Image (Bottom on Mobile, Left on Desktop) */}
           <div className="order-2 lg:order-1 relative w-full lg:w-[1000px] h-auto lg:h-full overflow-hidden flex justify-center sm:px-4">
             {imageData?.url ? (
-              <div className="relative w-[1000px] h-[900px] lg:absolute lg:-left-20">
+              <motion.div
+                className="relative w-[1000px] h-[900px] lg:absolute lg:-left-20"
+                initial={{ opacity: 0, x: -50, rotateY: -15 }}
+                animate={
+                  isInView
+                    ? {
+                        opacity: 1,
+                        x: 0,
+                        rotateY: 0,
+                      }
+                    : {
+                        opacity: 0,
+                        x: -50,
+                        rotateY: -15,
+                      }
+                }
+                transition={{
+                  duration: 1.2,
+                  delay: 0.2,
+                  ease: [0.25, 0.25, 0, 1],
+                }}
+                whileHover={{
+                  scale: 1.02,
+                  rotateY: 2,
+                  transition: { duration: 0.3 },
+                }}
+              >
                 <Image
                   src={imageData.url}
                   alt={imageData.alt}
                   fill
-                  className="object-contain
-                  "
+                  className="object-contain"
                   sizes=""
                   priority
                 />
-              </div>
+
+                {/* Floating elements around the image */}
+                <motion.div
+                  className="absolute -top-4 -right-4 w-4 h-4 bg-blue-500 rounded-full"
+                  animate={{
+                    y: [0, -10, 0],
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
+                <motion.div
+                  className="absolute -bottom-6 -left-6 w-6 h-6 bg-teal-500 rounded-full opacity-80"
+                  animate={{
+                    x: [0, 15, 0],
+                    rotate: [0, 180, 360],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
+              </motion.div>
             ) : (
-              <div className="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
+              <motion.div
+                className="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.25, 0, 1] }}
+              >
                 <div className="text-center">
-                  <Icon icon="mdi:devices" className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <Icon icon="mdi:devices" className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  </motion.div>
                   <p className="text-gray-500 text-sm">Device mockup placeholder</p>
                 </div>
-              </div>
+              </motion.div>
             )}
           </div>
         </div>

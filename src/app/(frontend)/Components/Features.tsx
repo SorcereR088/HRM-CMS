@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Media } from '@/payload-types'
 import { Icon } from '@iconify/react'
 import * as Lucide from 'lucide-react'
+import TextAnimation from './animation/TextAnimation'
 
 interface FeatureItem {
   title: string
@@ -149,13 +150,17 @@ const Features: React.FC<FeaturesProps> = ({
 
     return (
       <div key={feature.id || index} className={baseClasses}>
-        {renderIcon(feature)}
-        <div className={layout === 'vertical' ? 'flex-1' : 'flex-1'}>
-          <h3 className="text-xl font-semibold text-gray-900 leading-tight mb-2">
-            {feature.title}
-          </h3>
-          <p className="text-gray-600 leading-tight">{feature.description}</p>
-        </div>
+        <TextAnimation delay={0.0 + index * 0.1}>
+          <div className="flex gap-10 items-center">
+            {renderIcon(feature)}
+            <div className={layout === 'vertical' ? 'flex-1' : 'flex-1'}>
+              <h3 className="text-xl font-semibold text-gray-900 leading-tight mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 leading-tight">{feature.description}</p>
+            </div>
+          </div>
+        </TextAnimation>
       </div>
     )
   }

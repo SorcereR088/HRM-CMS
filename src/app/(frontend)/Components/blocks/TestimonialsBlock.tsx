@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Icon } from '@iconify/react'
+import TextAmination from '../animation/TextAnimation'
 
 interface TestimonialItem {
   quote: string
@@ -90,16 +91,18 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
     <section className={`py-16 sm:py-20 lg:py-24 ${bgColorClass}`}>
       <div className="w-full">
         {/* Heading */}
-        <div className="text-left mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-6 lg:px-12 xl:px-[140px] max-w-3xl">
-          {heading && (
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
-              {heading}
-            </h2>
-          )}
-          {subheading && (
-            <p className="text-base sm:text-lg text-gray-600 leading-relaxed">{subheading}</p>
-          )}
-        </div>
+        <TextAmination delay={0.3}>
+          <div className="text-left mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-6 lg:px-12 xl:px-[140px] max-w-3xl">
+            {heading && (
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
+                {heading}
+              </h2>
+            )}
+            {subheading && (
+              <p className="text-base sm:text-lg text-gray-600 leading-relaxed">{subheading}</p>
+            )}
+          </div>
+        </TextAmination>
 
         {/* Testimonials */}
         {testimonialsArray.length > 0 ? (
