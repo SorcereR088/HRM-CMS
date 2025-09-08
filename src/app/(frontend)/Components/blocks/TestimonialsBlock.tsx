@@ -41,12 +41,12 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
 
   // ⭐ Star Rating Component
   const StarRating = ({ rating }: { rating: number }) => (
-    <div className="flex items-center mb-2 sm:mb-3">
+    <div className="flex items-center mb-1 sm:mb-2 lg:mb-3">
       {[1, 2, 3, 4, 5].map((star) => (
         <Icon
           key={star}
           icon="mdi:star"
-          className={`w-4 h-4 sm:w-5 sm:h-5 ${
+          className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 ${
             star <= rating ? 'text-yellow-400' : 'text-gray-300'
           }`}
         />
@@ -57,21 +57,21 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
   // ⭐ Testimonial Card
   const TestimonialCard = ({ testimonial }: { testimonial: TestimonialItem }) => (
     <div
-      className="bg-gradient-to-br from-[#F5FFFC] to-white p-4 sm:p-6 rounded-xl shadow-sm 
+      className="bg-gradient-to-br from-[#F5FFFC] to-white p-3 sm:p-4 lg:p-6 rounded-lg sm:rounded-xl shadow-sm 
                  border border-gray-200 flex flex-col flex-shrink-0 
-                 mx-2 sm:mx-4 w-[280px] sm:w-[340px] lg:w-[380px] 
-                 h-[240px] sm:h-[260px] lg:h-[280px]
+                 mx-1 sm:mx-2 lg:mx-4 w-[220px] sm:w-[280px] lg:w-[380px] 
+                 h-[180px] sm:h-[220px] lg:h-[280px]
                  transition-all duration-300 hover:scale-[1.01] hover:z-20 hover:border-teal-600 
                  hover:shadow-[0_8px_20px_rgba(20,184,166,0.2)]"
     >
       <div className="flex items-start justify-between">
-        <span className="text-3xl sm:text-4xl lg:text-5xl text-teal-500">&quot;</span>
+        <span className="text-xl sm:text-3xl lg:text-5xl text-teal-500">&quot;</span>
         <StarRating rating={testimonial.rating} />
       </div>
-      <blockquote className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow overflow-hidden">
+      <blockquote className="text-gray-700 text-xs sm:text-sm lg:text-base leading-relaxed mb-2 sm:mb-4 lg:mb-6 flex-grow overflow-hidden">
         {testimonial.quote}
       </blockquote>
-      <div className="border-t border-gray-200 pt-3 sm:pt-4 mt-auto">
+      <div className="border-t border-gray-200 pt-2 sm:pt-3 lg:pt-4 mt-auto">
         <p className="font-semibold text-gray-900 text-xs sm:text-sm truncate">
           {testimonial.authorName}
         </p>

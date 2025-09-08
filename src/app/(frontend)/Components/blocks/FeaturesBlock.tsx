@@ -48,7 +48,7 @@ const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left Side - Heading and Subheading */}
-          <div className="lg:sticky lg:top-24 max-w-xl">
+          <div className="lg:sticky lg:top-80 max-w-xl">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
               {heading}
             </h2>

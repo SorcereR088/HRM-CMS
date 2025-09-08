@@ -79,7 +79,7 @@ const CareersBlock: React.FC<CareersBlockProps> = (props) => {
   }
 
   return (
-    <section className={`py-16 bg-${safeBgColor}`}>
+    <section className={`py-16 lg:py-20 bg-${safeBgColor}`}>
       <div className="max-w-8xl mx-auto px-12 sm:px-8 lg:px-[140px] h-screen">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Left Side - Header */}

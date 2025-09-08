@@ -148,13 +148,14 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
           {/* Left Column - Device Image (Bottom on Mobile, Left on Desktop) */}
           <div className="order-2 lg:order-1 relative w-full lg:w-[1000px] h-auto lg:h-full overflow-hidden flex justify-center sm:px-4">
             {imageData?.url ? (
-              <div className="relative w-full h-96 lg:absolute lg:-left-20 lg:top-12">
+              <div className="relative w-[1000px] h-[900px] lg:absolute lg:-left-20">
                 <Image
                   src={imageData.url}
                   alt={imageData.alt}
                   fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 1200px"
+                  className="object-contain
+                  "
+                  sizes=""
                   priority
                 />
               </div>
