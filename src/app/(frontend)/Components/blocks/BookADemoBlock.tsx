@@ -105,25 +105,31 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
 
   return (
     <section className={`py-16 lg:py-20 ${bgColorClass}`}>
-      <div className="max-w-8xl mx-auto px-12 sm:px-8 lg:px-[140px] grid grid-cols-1 lg:grid-cols-2 gap-64">
-        {/* Left Column - Features */}
-        <div className="">
+      <div className="max-w-8xl mx-auto px-4 sm:px-8 lg:px-[140px] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-64">
+        {/* Title and Description - Always first on mobile, left column on desktop */}
+        <div className="order-1 lg:order-1">
           {heading && (
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-20 leading-tight max-w-2xl">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-6 lg:mb-20 leading-tight max-w-2xl">
               {renderStyledHeading(heading)}
             </h2>
           )}
           {description && (
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">{description}</p>
           )}
-          {features && features.length > 0 && (
-            <Features features={features} layout="vertical" iconSize="md" spacing="normal" />
-          )}
+
+          {/* Features - Show after description on mobile, but keep in left column on desktop */}
+          <div className="block lg:block">
+            <div className="hidden lg:block">
+              {features && features.length > 0 && (
+                <Features features={features} layout="vertical" iconSize="md" spacing="normal" />
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Right Column - Form */}
-        <div>
-          <div className="bg-white p-8 rounded-sm">
+        {/* Form - Second on mobile, right column on desktop */}
+        <div className="order-2 lg:order-2">
+          <div className="bg-white p-3 sm:p-6 md:p-6 lg:p-8 rounded-sm">
             {formHeading && (
               <h3 className="text-xl font-semibold text-gray-900 mb-6">{formHeading}</h3>
             )}
@@ -160,6 +166,13 @@ const BookADemoBlock: React.FC<BookADemoBlockProps> = ({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Features - Show after form on mobile, hidden on desktop (already shown in left column) */}
+        <div className="order-3 lg:hidden">
+          {features && features.length > 0 && (
+            <Features features={features} layout="vertical" iconSize="md" spacing="normal" />
+          )}
         </div>
       </div>
     </section>
