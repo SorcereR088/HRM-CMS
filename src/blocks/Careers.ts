@@ -79,7 +79,6 @@ const Careers: Block = {
           name: 'salaryRange',
           type: 'text',
           label: 'Salary Range',
-          defaultValue: '$100 - $500K',
           required: false,
         },
         {

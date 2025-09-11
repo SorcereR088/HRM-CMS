@@ -51,7 +51,7 @@ const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
           {/* Left Side - Heading and Subheading */}
           <div className="lg:sticky lg:top-80 max-w-xl">
             <TextAmination>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 leading-tight mb-4">
                 {heading}
               </h2>
             </TextAmination>

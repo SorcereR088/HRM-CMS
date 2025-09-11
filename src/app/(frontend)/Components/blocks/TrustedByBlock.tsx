@@ -36,9 +36,9 @@ const TrustedByBlock: React.FC<TrustedByBlockProps> = ({
   return (
     <section className="px-4 py-24 text-center bg-white w-full items-center">
       <TextAmination>
-        <h2 className="text-2xl sm:text-3xl md:text-[40px] font-medium max-w-[700px] mx-auto">
+        <h2 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-medium max-w-[700px] mx-auto">
           {preText}{' '}
-          <span className="text-Teal font-bold text-2xl sm:text-3xl md:text-[40px]">
+          <span className="text-Teal font-bold text-3xl sm:text-4xl lg:text-5xl">
             {highlightText}
           </span>{' '}
           {postText}
@@ -47,7 +47,7 @@ const TrustedByBlock: React.FC<TrustedByBlockProps> = ({
 
       {subtitle && (
         <TextAmination delay={0.2}>
-          <p className="text-gray-500 mt-2">{subtitle}</p>
+          <p className="text-gray-500 mt-2 text-2xl sm:text-1xl">{subtitle}</p>
         </TextAmination>
       )}
 
@@ -79,7 +79,7 @@ const TrustedByBlock: React.FC<TrustedByBlockProps> = ({
               >
                 {[...validLogos, ...validLogos].map((logoItem, index) => (
                   <Image
-                    key={`${logoItem.id || 'logo'}-${index}`} // ✅ now unique
+                    key={`${logoItem.id || 'logo'}-${index}`}
                     src={logoItem.logo.url || '/placeholder.png'}
                     alt={logoItem.logo.alt || `Logo ${index + 1}`}
                     width={150}

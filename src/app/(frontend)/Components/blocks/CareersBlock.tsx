@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import TextAnimation from '../animation/TextAnimation'
 
 // Define types for the component props
 interface ContactInfo {
@@ -84,26 +85,32 @@ const CareersBlock: React.FC<CareersBlockProps> = (props) => {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Left Side - Header */}
           <div className="lg:w-1/3">
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">{heading}</h1>
-            {description && (
-              <p className="text-gray-600 mb-8 text-lg leading-relaxed">{description}</p>
-            )}
+            <TextAnimation>
+              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">{heading}</h1>
+            </TextAnimation>
+            <TextAnimation delay={0.2}>
+              {description && (
+                <p className="text-gray-600 mb-8 text-lg leading-relaxed">{description}</p>
+              )}
+            </TextAnimation>
             {contactInfo && (contactInfo.label || contactInfo.email) && (
-              <div className="space-y-2">
-                {contactInfo.label && (
-                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                    {contactInfo.label}
-                  </p>
-                )}
-                {contactInfo.email && (
-                  <a
-                    href={`mailto:${contactInfo.email}`}
-                    className="text-Teal hover:text-DarkTeal font-medium text-lg"
-                  >
-                    {contactInfo.email}
-                  </a>
-                )}
-              </div>
+              <TextAnimation delay={0.4}>
+                <div className="space-y-2">
+                  {contactInfo.label && (
+                    <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                      {contactInfo.label}
+                    </p>
+                  )}
+                  {contactInfo.email && (
+                    <a
+                      href={`mailto:${contactInfo.email}`}
+                      className="text-Teal hover:text-DarkTeal font-medium text-lg"
+                    >
+                      {contactInfo.email}
+                    </a>
+                  )}
+                </div>
+              </TextAnimation>
             )}
           </div>
 
@@ -112,66 +119,68 @@ const CareersBlock: React.FC<CareersBlockProps> = (props) => {
             {safeJobListings.length > 0 ? (
               <div className="space-y-6">
                 {safeJobListings.map((job, index: number) => (
-                  <div
-                    key={job.id || index}
-                    className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        {/* Category */}
-                        <div className="mb-3">
-                          <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
-                            {job.category}
-                          </span>
+                  <TextAnimation delay={0.1 + index * 0.1} key={job.id || index}>
+                    <div
+                      key={job.id || index}
+                      className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          {/* Category */}
+                          <div className="mb-3">
+                            <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
+                              {job.category}
+                            </span>
+                          </div>
+
+                          {/* Job Title */}
+                          <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            {job.title}
+                          </h3>
+
+                          {/* Job Details */}
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+                            <span className="flex items-center gap-1">
+                              {getJobTypeDisplay(job.jobType)}
+                            </span>
+                            {job.salaryRange && (
+                              <>
+                                <span>•</span>
+                                <span>{job.salaryRange}</span>
+                              </>
+                            )}
+                            <span>•</span>
+                            <span>{job.location}</span>
+                          </div>
                         </div>
 
-                        {/* Job Title */}
-                        <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                          {job.title}
-                        </h3>
-
-                        {/* Job Details */}
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
-                          <span className="flex items-center gap-1">
-                            {getJobTypeDisplay(job.jobType)}
-                          </span>
-                          {job.salaryRange && (
-                            <>
-                              <span>•</span>
-                              <span>{job.salaryRange}</span>
-                            </>
-                          )}
-                          <span>•</span>
-                          <span>{job.location}</span>
-                        </div>
-                      </div>
-
-                      {/* CTA Button */}
-                      <div className="ml-4">
-                        <a
-                          href={job.applicationFormUrl}
-                          className={getButtonClasses(safeCta.style)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {safeCta.text}
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                        {/* CTA Button */}
+                        <div className="ml-4">
+                          <a
+                            href={job.applicationFormUrl}
+                            className={getButtonClasses(safeCta.style)}
+                            target="_blank"
+                            rel="noopener noreferrer"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5l7 7-7 7"
-                            />
-                          </svg>
-                        </a>
+                            {safeCta.text}
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
+                            </svg>
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </TextAnimation>
                 ))}
               </div>
             ) : (

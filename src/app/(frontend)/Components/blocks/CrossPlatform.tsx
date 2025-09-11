@@ -101,7 +101,9 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: [0.25, 0.25, 0, 1] }}
             >
-              <h2 className="text-5xl font-bold text-gray-900 mb-4">{heading}</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
+                {heading}
+              </h2>
               <div className="text-5xl font-bold text-gray-900 flex items-center gap-4 justify-center lg:justify-start">
                 <div className="inline-block relative">
                   <div className="inline-block relative">
@@ -160,7 +162,7 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                       stiffness: 200,
                     }}
                   >
-                    <div className="flex items-center justify-center bg-white rounded-2xl shadow-lg">
+                    <div className="flex items-center justify-center rounded-2xl">
                       <Icon icon={icon.iconName} className="w-10 h-10" />
                     </div>
                   </motion.div>

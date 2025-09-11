@@ -94,7 +94,7 @@ const TestimonialsBlock: React.FC<TestimonialsBlockProps> = ({
         <TextAmination delay={0.3}>
           <div className="text-left mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-6 lg:px-12 xl:px-[140px] max-w-3xl">
             {heading && (
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
+              <h2 className="ttext-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900 leading-tight mb-4">
                 {heading}
               </h2>
             )}
