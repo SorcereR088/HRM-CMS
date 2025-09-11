@@ -101,13 +101,7 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: [0.25, 0.25, 0, 1] }}
             >
-              <motion.h2
-                className="text-5xl font-bold text-gray-900 mb-4"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                {heading}
-              </motion.h2>
+              <h2 className="text-5xl font-bold text-gray-900 mb-4">{heading}</h2>
               <div className="text-5xl font-bold text-gray-900 flex items-center gap-4 justify-center lg:justify-start">
                 <div className="inline-block relative">
                   <div className="inline-block relative">
@@ -119,10 +113,6 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                         type: 'spring',
                         stiffness: 200,
                         damping: 10,
-                      }}
-                      whileHover={{
-                        scale: 1.05,
-                        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
                       }}
                     >
                       <AnimatePresence mode="wait" initial={false}>
@@ -169,14 +159,8 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                       type: 'spring',
                       stiffness: 200,
                     }}
-                    whileHover={{
-                      scale: 1.1,
-                      y: -5,
-                      transition: { duration: 0.2 },
-                    }}
-                    whileTap={{ scale: 0.95 }}
                   >
-                    <div className="flex items-center justify-center bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div className="flex items-center justify-center bg-white rounded-2xl shadow-lg">
                       <Icon icon={icon.iconName} className="w-10 h-10" />
                     </div>
                   </motion.div>
@@ -186,7 +170,7 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
 
             {description && (
               <motion.p
-                className="text-md text-gray-600 mb-8 leading-tight max-w-lg mx-auto lg:mx-0"
+                className="text-md text-gray-600 mb-4 lg:mb-8 leading-tight max-w-lg mx-auto lg:mx-0"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.8, delay: 0.8, ease: [0.25, 0.25, 0, 1] }}
@@ -200,7 +184,7 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
           <div className="order-2 lg:order-1 relative w-full lg:w-[1000px] h-auto lg:h-full overflow-hidden flex justify-center sm:px-4">
             {imageData?.url ? (
               <motion.div
-                className="relative w-[1000px] h-[900px] lg:absolute lg:-left-20"
+                className="relative w-[600px] h-[400px] lg:w-[1000px] lg:h-[900px] lg:absolute lg:-left-20"
                 initial={{ opacity: 0, x: -50, rotateY: -15 }}
                 animate={
                   isInView
@@ -220,11 +204,6 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                   delay: 0.2,
                   ease: [0.25, 0.25, 0, 1],
                 }}
-                whileHover={{
-                  scale: 1.02,
-                  rotateY: 2,
-                  transition: { duration: 0.3 },
-                }}
               >
                 <Image
                   src={imageData.url}
@@ -236,18 +215,6 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                 />
 
                 {/* Floating elements around the image */}
-                <motion.div
-                  className="absolute -top-4 -right-4 w-4 h-4 bg-blue-500 rounded-full"
-                  animate={{
-                    y: [0, -10, 0],
-                    scale: [1, 1.2, 1],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                />
                 <motion.div
                   className="absolute -bottom-6 -left-6 w-6 h-6 bg-teal-500 rounded-full opacity-80"
                   animate={{
@@ -269,12 +236,7 @@ const CrossPlatform: React.FC<CrossPlatformProps> = ({
                 transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.25, 0, 1] }}
               >
                 <div className="text-center">
-                  <motion.div
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <Icon icon="mdi:devices" className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  </motion.div>
+                  <Icon icon="mdi:devices" className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500 text-sm">Device mockup placeholder</p>
                 </div>
               </motion.div>

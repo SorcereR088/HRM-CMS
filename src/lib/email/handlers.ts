@@ -1,9 +1,85 @@
-import { FormSubmissionData, EmailResult } from './types'
-import { extractEmailFromSubmission, extractNameFromSubmission } from './extractors'
+import { PayloadRequest } from 'payload'
+import { EmailResult } from './types'
 import { generateFormSubmissionEmail } from '../../templates/FormSubmissionEmail'
 import { generateFormConfirmationEmail } from '../../templates/FormConfirmationEmail'
 
-export const handleFormSubmissionEmails = async ({ doc, req, operation }: any) => {
+// Define proper types for form submission document
+interface FormSubmissionField {
+  field: string
+  value: string | number | boolean | undefined
+}
+
+interface FormSubmissionDocument {
+  id: string
+  createdAt: string
+  form?: {
+    title?: string
+  }
+  submissionData: FormSubmissionField[] | Record<string, unknown>
+}
+
+// Helper function to normalize submission data for email templates
+const normalizeSubmissionDataForEmail = (
+  data: FormSubmissionField[] | Record<string, unknown>,
+): FormSubmissionField[] => {
+  if (Array.isArray(data)) {
+    return data.map((item) => ({
+      field: item.field,
+      value:
+        typeof item.value === 'string' ||
+        typeof item.value === 'number' ||
+        typeof item.value === 'boolean'
+          ? item.value
+          : item.value
+            ? String(item.value)
+            : undefined,
+    }))
+  }
+
+  // Convert object to array format
+  return Object.entries(data).map(([field, value]) => ({
+    field,
+    value:
+      typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+        ? value
+        : value
+          ? String(value)
+          : undefined,
+  }))
+}
+
+// Helper function to extract email from normalized data
+const extractEmailFromNormalizedData = (data: FormSubmissionField[]): string | null => {
+  const emailField = data.find(
+    (item) =>
+      item.field.toLowerCase().includes('email') ||
+      item.field.toLowerCase() === 'email' ||
+      item.field.toLowerCase() === 'e-mail',
+  )
+
+  return emailField && typeof emailField.value === 'string' ? emailField.value : null
+}
+
+// Helper function to extract name from normalized data
+const extractNameFromNormalizedData = (data: FormSubmissionField[]): string | null => {
+  const nameField = data.find(
+    (item) =>
+      item.field.toLowerCase().includes('name') ||
+      item.field.toLowerCase() === 'name' ||
+      item.field.toLowerCase() === 'full_name' ||
+      item.field.toLowerCase() === 'fullname',
+  )
+
+  return nameField && typeof nameField.value === 'string' ? nameField.value : null
+}
+
+interface HookContext {
+  doc: FormSubmissionDocument
+  req: PayloadRequest
+  operation: string
+}
+
+export const handleFormSubmissionEmails = async ({ doc, req, operation }: HookContext) => {
   // Only process emails for new submissions
   if (operation !== 'create') {
     return
@@ -15,9 +91,12 @@ export const handleFormSubmissionEmails = async ({ doc, req, operation }: any) =
     const formTitle = doc.form?.title || 'Unknown Form'
     const serverUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'localhost:3000'
 
-    // Extract submitter's email and name
-    const submitterEmail = extractEmailFromSubmission(doc.submissionData)
-    const submitterName = extractNameFromSubmission(doc.submissionData)
+    // Normalize submission data for email templates
+    const normalizedSubmissionData = normalizeSubmissionDataForEmail(doc.submissionData)
+
+    // Extract submitter's email and name from normalized data
+    const submitterEmail = extractEmailFromNormalizedData(normalizedSubmissionData)
+    const submitterName = extractNameFromNormalizedData(normalizedSubmissionData)
 
     // Prepare email promises for parallel execution
     const emailPromises: Promise<EmailResult>[] = []
@@ -27,7 +106,7 @@ export const handleFormSubmissionEmails = async ({ doc, req, operation }: any) =
       id: doc.id,
       formTitle,
       createdAt: doc.createdAt,
-      submissionData: doc.submissionData,
+      submissionData: normalizedSubmissionData,
       serverUrl,
     })
 

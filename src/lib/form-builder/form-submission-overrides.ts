@@ -1,4 +1,9 @@
+import type { Field } from 'payload'
 import { handleFormSubmissionEmails } from '../email/handlers'
+
+interface DefaultFieldsArg {
+  defaultFields: Field[]
+}
 
 export const getFormSubmissionOverrides = () => ({
   slug: 'form-submissions',
@@ -16,7 +21,7 @@ export const getFormSubmissionOverrides = () => ({
     update: () => false,
     delete: () => true,
   },
-  fields: ({ defaultFields }: any) => [
+  fields: ({ defaultFields }: DefaultFieldsArg): Field[] => [
     ...defaultFields,
     {
       name: 'dynamicFields',
@@ -52,7 +57,7 @@ export const getFormSubmissionOverrides = () => ({
           admin: { readOnly: true },
         },
       ],
-    },
+    } as Field,
     {
       name: 'submissionSummary',
       type: 'textarea',
@@ -61,7 +66,7 @@ export const getFormSubmissionOverrides = () => ({
         readOnly: true,
         description: 'Human-readable summary of all submitted data',
       },
-    },
+    } as Field,
   ],
   hooks: {
     afterChange: [handleFormSubmissionEmails],

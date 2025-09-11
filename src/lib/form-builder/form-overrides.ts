@@ -1,3 +1,9 @@
+import type { Field } from 'payload'
+
+interface DefaultFieldsArg {
+  defaultFields: Field[]
+}
+
 export const getFormOverrides = () => ({
   slug: 'forms',
   admin: {
@@ -10,17 +16,17 @@ export const getFormOverrides = () => ({
     update: () => true,
     delete: () => true,
   },
-  fields: ({ defaultFields }: any) =>
-    defaultFields.map((field: any) => {
+  fields: ({ defaultFields }: DefaultFieldsArg): Field[] =>
+    defaultFields.map((field: Field) => {
       if ('name' in field && field.name === 'fields') {
         return {
           ...field,
           admin: {
-            ...field.admin,
+            ...(field.admin || {}),
             readOnly: false,
             disabled: false,
           },
-        } as typeof field
+        } as Field
       }
       return field
     }),

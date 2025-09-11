@@ -6,7 +6,7 @@ export const getAdminConfig = (dirname: string) => ({
     baseDir: path.resolve(dirname),
   },
   livePreview: {
-    url: ({ data }: { data: any }) => {
+    url: ({ data }: { data: Record<string, unknown> }) => {
       const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'
       return `${baseUrl}/preview/${data.slug}?id=${data.id}`
     },
